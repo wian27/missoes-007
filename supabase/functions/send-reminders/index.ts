@@ -1,5 +1,6 @@
-import { createSupabaseContext } from "server";
-import webpush from "web-push";
+import { createSupabaseContext } from "npm:@supabase/server@1";
+import webpush from "npm:web-push";
+
 
 type PushSubscriptionRow = {
   id: string;
@@ -55,22 +56,34 @@ export default {
       );
     }
 
-    const vapidPublicKey = Deno.env.get("VAPID_PUBLIC_KEY");
-    const vapidPrivateKey = Deno.env.get("VAPID_PRIVATE_KEY");
-    const vapidEmail = Deno.env.get("VAPID_CONTACT_EMAIL");
+   const vapidPublicKey = Deno.env.get("VAPID_PUBLIC_KEY");
+const vapidPrivateKey = Deno.env.get("VAPID_PRIVATE_KEY");
 
-    if (!vapidPublicKey || !vapidPrivateKey || !vapidEmail) {
-      return Response.json(
-        { error: "Chaves VAPID não configuradas." },
-        { status: 500 }
-      );
-    }
+// Aceita o nome que foi configurado antes e o nome usado no código original.
+const configuredSubject =
+  Deno.env.get("VAPID_SUBJECT") ||
+  Deno.env.get("VAPID_CONTACT_EMAIL");
 
-    webpush.setVapidDetails(
-      `mailto:${vapidEmail}`,
-      vapidPublicKey,
-      vapidPrivateKey
-    );
+const vapidSubject = configuredSubject
+  ? (/^(mailto:|https:\/\/)/i.test(configuredSubject)
+      ? configuredSubject
+      : `mailto:${configuredSubject}`)
+  : null;
+
+if (!vapidPublicKey || !vapidPrivateKey || !vapidSubject) {
+  console.error("Falta configurar um ou mais secrets VAPID.");
+  return Response.json(
+    { error: "Chaves VAPID não configuradas." },
+    { status: 500 }
+  );
+}
+
+webpush.setVapidDetails(
+  vapidSubject,
+  vapidPublicKey,
+  vapidPrivateKey
+);
+
 
     const admin = context.supabaseAdmin;
 
