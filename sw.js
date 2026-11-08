@@ -1,4 +1,4 @@
-const CACHE_NAME = "missoes-007-v1";
+const CACHE_NAME = "missoes-007-v2";
 
 const APP_SHELL = [
   "./",

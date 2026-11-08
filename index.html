@@ -1990,23 +1990,6 @@ async function registerPwa() {
   }
 }
 
-window.addEventListener("beforeinstallprompt", (event) => {
-  event.preventDefault();
-  deferredInstallPrompt = event;
-
-  document.getElementById("installAppBtn")?.classList.remove("hidden");
-  document.getElementById("installHelp").textContent =
-    "O aplicativo está pronto para ser instalado.";
-});
-
-window.addEventListener("appinstalled", () => {
-  deferredInstallPrompt = null;
-
-  document.getElementById("installAppBtn")?.classList.add("hidden");
-  document.getElementById("installHelp").textContent =
-    "Missões 007 instalado com sucesso neste dispositivo.";
-});
-
 let deferredPwaPrompt = null;
 
 const installBtn = document.getElementById("installAppBtn");
