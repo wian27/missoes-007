@@ -1,0 +1,2202 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#07130f" />
+  <title>Missões 007 — Sistema de Evolução</title>
+  <link rel="manifest" href="./manifest.webmanifest" />
+<link rel="icon" href="./icon.svg" type="image/svg+xml" />
+<meta name="theme-color" content="#07130f" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Missões 007" />
+
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <style>
+    :root {
+      --bg: #07130f;
+      --bg2: #0d2019;
+      --card: #112c21;
+      --card2: #183825;
+      --line: #28513a;
+      --text: #f2f8f3;
+      --muted: #9db4a4;
+      --green: #55db88;
+      --green2: #2aaa60;
+      --yellow: #f4ce5c;
+      --red: #ff6e6e;
+      --blue: #68b8ff;
+      --shadow: 0 12px 35px rgba(0,0,0,.28);
+    }
+
+    body.light {
+      --bg: #edf5ef;
+      --bg2: #dfece2;
+      --card: #ffffff;
+      --card2: #f2f7f3;
+      --line: #c9dbce;
+      --text: #163020;
+      --muted: #607a68;
+      --green: #167a42;
+      --green2: #0e6534;
+      --yellow: #a97900;
+      --red: #c33d3d;
+      --blue: #236eb0;
+      --shadow: 0 12px 30px rgba(18, 58, 34, .12);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top right, rgba(85,219,136,.12), transparent 30%),
+        linear-gradient(135deg, var(--bg), var(--bg2));
+    }
+
+    button, input, select, textarea { font: inherit; }
+    button { cursor: pointer; border: 0; }
+    input, select, textarea {
+      width: 100%;
+      color: var(--text);
+      background: var(--card2);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 12px;
+      outline: none;
+    }
+
+    textarea { min-height: 105px; resize: vertical; }
+
+    .hidden { display: none !important; }
+
+    /* AUTENTICAÇÃO */
+    .auth-screen {
+      display: grid;
+      place-items: center;
+      min-height: 100vh;
+      padding: 18px;
+    }
+
+    .auth-box {
+      width: min(100%, 460px);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 22px;
+      padding: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    .auth-logo {
+      width: 72px;
+      height: 72px;
+      display: grid;
+      place-items: center;
+      margin: 0 auto 16px;
+      color: var(--green);
+      border: 2px solid var(--green);
+      border-radius: 20px;
+      font-size: 27px;
+      font-weight: bold;
+      box-shadow: inset 0 0 16px rgba(85,219,136,.18);
+    }
+
+    .auth-box h1 {
+      margin: 0;
+      text-align: center;
+      font-size: 25px;
+      letter-spacing: 1px;
+    }
+
+    .auth-box > p {
+      color: var(--muted);
+      text-align: center;
+      line-height: 1.5;
+      margin: 9px 0 24px;
+    }
+
+    .auth-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      margin-bottom: 18px;
+      background: var(--card2);
+      border-radius: 11px;
+      padding: 5px;
+    }
+
+    .auth-tab {
+      padding: 10px;
+      color: var(--muted);
+      background: transparent;
+      border-radius: 8px;
+    }
+
+    .auth-tab.active {
+      color: #062412;
+      background: var(--green);
+      font-weight: bold;
+    }
+
+    .auth-form { display: grid; gap: 11px; }
+    .auth-form label { color: var(--muted); font-size: 13px; }
+
+    .auth-message {
+      display: none;
+      margin-top: 14px;
+      padding: 11px;
+      color: var(--yellow);
+      background: rgba(244,206,92,.1);
+      border: 1px solid rgba(244,206,92,.35);
+      border-radius: 10px;
+      font-size: 13px;
+      line-height: 1.4;
+    }
+
+    .auth-link {
+      margin-top: 14px;
+      color: var(--green);
+      background: transparent;
+      text-decoration: underline;
+      font-size: 13px;
+    }
+
+    /* APP */
+    .app {
+      width: min(1120px, 100%);
+      margin: auto;
+      padding: 18px 18px 105px;
+    }
+
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 15px;
+      margin-bottom: 22px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 48px;
+      height: 48px;
+      border: 2px solid var(--green);
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      color: var(--green);
+      font-size: 18px;
+      font-weight: bold;
+      box-shadow: inset 0 0 16px rgba(85,219,136,.18);
+    }
+
+    .brand h1 {
+      font-size: 18px;
+      margin: 0;
+      letter-spacing: 1px;
+    }
+
+    .brand p {
+      margin: 4px 0 0;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .top-actions { display: flex; gap: 8px; }
+
+    .icon-btn, .outline-btn {
+      color: var(--text);
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 10px 12px;
+    }
+
+    .icon-btn:hover, .outline-btn:hover { border-color: var(--green); }
+
+    .hero {
+      background: linear-gradient(135deg, rgba(85,219,136,.17), rgba(17,44,33,.94));
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      margin-bottom: 18px;
+    }
+
+    .eyebrow {
+      color: var(--green);
+      text-transform: uppercase;
+      letter-spacing: 1.4px;
+      font-weight: bold;
+      font-size: 11px;
+    }
+
+    .hero h2 {
+      font-size: clamp(24px, 4vw, 36px);
+      margin: 10px 0 8px;
+    }
+
+    .hero p {
+      color: var(--muted);
+      margin: 0 0 16px;
+      max-width: 650px;
+      line-height: 1.5;
+    }
+
+    .level-row, .stats-grid { display: grid; gap: 12px; }
+
+    .level-row {
+      grid-template-columns: 1fr auto;
+      align-items: center;
+    }
+
+    .rank {
+      background: rgba(0,0,0,.16);
+      padding: 10px 13px;
+      border-radius: 12px;
+      font-size: 13px;
+    }
+
+    .rank strong { color: var(--yellow); }
+
+    .progress {
+      height: 11px;
+      overflow: hidden;
+      background: rgba(0,0,0,.24);
+      border-radius: 99px;
+      margin-top: 8px;
+    }
+
+    .progress > div {
+      height: 100%;
+      background: linear-gradient(90deg, var(--green2), var(--green));
+      border-radius: inherit;
+      transition: width .35s ease;
+    }
+
+    .stats-grid {
+      grid-template-columns: repeat(4, 1fr);
+      margin: 18px 0;
+    }
+
+    .stat {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 15px;
+      box-shadow: var(--shadow);
+    }
+
+    .stat span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 7px;
+    }
+
+    .stat strong { font-size: 24px; color: var(--green); }
+
+    .section {
+      display: none;
+      animation: fade .25s ease;
+    }
+
+    .section.active { display: block; }
+
+    @keyframes fade {
+      from { opacity: .3; transform: translateY(8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .section-title {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 10px;
+      margin: 22px 0 12px;
+    }
+
+    .section-title h3 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .section-title small { color: var(--muted); }
+
+    .card {
+      background: var(--card);
+      border: 1px solid var(--line);
+      border-radius: 17px;
+      padding: 17px;
+      box-shadow: var(--shadow);
+      margin-bottom: 13px;
+    }
+
+    .mission {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .mission:last-child { border-bottom: 0; }
+
+    .check {
+      width: 26px;
+      height: 26px;
+      border-radius: 9px;
+      border: 2px solid var(--green);
+      background: transparent;
+      color: #07130f;
+      flex: 0 0 auto;
+      font-weight: bold;
+    }
+
+    .mission.done .check { background: var(--green); }
+
+    .mission.done .mission-name {
+      text-decoration: line-through;
+      color: var(--muted);
+    }
+
+    .mission-info { flex: 1; min-width: 0; }
+
+    .mission-name {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+
+    .tag {
+      font-size: 11px;
+      color: var(--green);
+      border: 1px solid var(--line);
+      padding: 4px 7px;
+      border-radius: 99px;
+      display: inline-block;
+    }
+
+    .mission-xp {
+      color: var(--yellow);
+      font-size: 12px;
+      font-weight: bold;
+      white-space: nowrap;
+    }
+
+    .delete-btn {
+      color: var(--red);
+      background: transparent;
+      font-size: 20px;
+      padding: 5px;
+    }
+
+    .primary-btn {
+      width: 100%;
+      color: #062412;
+      font-weight: bold;
+      background: linear-gradient(135deg, var(--green), #96f2b5);
+      padding: 14px;
+      border-radius: 12px;
+      margin-top: 12px;
+    }
+
+    .primary-btn:disabled {
+      cursor: not-allowed;
+      opacity: .55;
+    }
+
+    .challenge {
+      border-left: 4px solid var(--yellow);
+      background: linear-gradient(135deg, rgba(244,206,92,.13), var(--card));
+    }
+
+    .challenge strong { color: var(--yellow); }
+
+    .categories {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .category {
+      text-align: center;
+      border: 1px solid var(--line);
+      background: var(--card);
+      color: var(--text);
+      border-radius: 15px;
+      padding: 16px 8px;
+      min-height: 105px;
+    }
+
+    .category.active { border-color: var(--green); background: rgba(85,219,136,.09); }
+
+    .category .emoji {
+      display: block;
+      font-size: 27px;
+      margin-bottom: 8px;
+    }
+
+    .category small {
+      color: var(--muted);
+      display: block;
+      margin-top: 4px;
+      font-size: 10px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 180px;
+      gap: 10px;
+    }
+
+    .calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 7px;
+      margin-top: 13px;
+    }
+
+    .weekday, .day {
+      text-align: center;
+      font-size: 12px;
+      padding: 9px 4px;
+      border-radius: 9px;
+    }
+
+    .weekday { color: var(--muted); }
+
+    .day {
+      background: var(--card2);
+      border: 1px solid transparent;
+      min-height: 40px;
+    }
+
+    .day.today { border-color: var(--green); }
+    .day.complete { background: rgba(85,219,136,.25); color: var(--green); font-weight: bold; }
+    .day.partial { background: rgba(244,206,92,.17); color: var(--yellow); }
+
+    .bars {
+      display: flex;
+      align-items: end;
+      height: 180px;
+      gap: 8px;
+      padding-top: 18px;
+    }
+
+    .bar-item { flex: 1; text-align: center; min-width: 22px; }
+
+    .bar {
+      width: 100%;
+      min-height: 3px;
+      border-radius: 7px 7px 2px 2px;
+      background: linear-gradient(180deg, var(--green), var(--green2));
+    }
+
+    .bar-item small {
+      color: var(--muted);
+      display: block;
+      margin-top: 8px;
+      font-size: 10px;
+    }
+
+    .category-row { margin: 15px 0; }
+
+    .category-row-head {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      gap: 10px;
+    }
+
+    .category-row-head strong { color: var(--green); }
+
+    .medals {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .medal {
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      padding: 13px;
+      color: var(--muted);
+      background: var(--card2);
+    }
+
+    .medal.unlocked {
+      color: var(--text);
+      border-color: var(--yellow);
+      background: rgba(244,206,92,.1);
+    }
+
+    .medal b { display: block; color: inherit; margin-bottom: 5px; }
+
+    .settings-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      padding: 13px 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .settings-row:last-child { border-bottom: 0; }
+
+    .toggle {
+      appearance: none;
+      width: 46px;
+      height: 25px;
+      border-radius: 99px;
+      background: var(--line);
+      position: relative;
+      cursor: pointer;
+    }
+
+    .toggle::before {
+      content: "";
+      position: absolute;
+      width: 19px;
+      height: 19px;
+      background: white;
+      border-radius: 50%;
+      left: 3px;
+      top: 3px;
+      transition: .2s;
+    }
+
+    .toggle:checked { background: var(--green2); }
+    .toggle:checked::before { transform: translateX(21px); }
+
+    .ranking-table { width: 100%; border-collapse: collapse; }
+
+    .ranking-table th {
+      color: var(--muted);
+      text-align: left;
+      font-size: 11px;
+      text-transform: uppercase;
+      padding: 10px 7px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .ranking-table td {
+      padding: 13px 7px;
+      border-bottom: 1px solid var(--line);
+      font-size: 14px;
+    }
+
+    .ranking-table tr.me { background: rgba(85,219,136,.1); }
+    .ranking-table td:last-child { color: var(--yellow); font-weight: bold; text-align: right; }
+    .ranking-table th:last-child { text-align: right; }
+
+    .rank-position {
+      color: var(--green);
+      font-weight: bold;
+      width: 34px;
+    }
+
+    .empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 22px 10px;
+    }
+
+    .notice {
+      margin: 10px 0;
+      padding: 11px;
+      color: var(--yellow);
+      background: rgba(244,206,92,.1);
+      border: 1px solid rgba(244,206,92,.27);
+      border-radius: 10px;
+      font-size: 13px;
+    }
+
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 2px;
+      background: rgba(7,19,15,.94);
+      border-top: 1px solid var(--line);
+      padding: 9px max(8px, calc((100% - 720px) / 2));
+      z-index: 20;
+      backdrop-filter: blur(10px);
+    }
+
+    body.light .bottom-nav { background: rgba(255,255,255,.94); }
+
+    .nav-btn {
+      flex: 1;
+      max-width: 130px;
+      color: var(--muted);
+      background: transparent;
+      padding: 9px 4px;
+      font-size: 11px;
+      border-radius: 10px;
+    }
+
+    .nav-btn span {
+      display: block;
+      font-size: 18px;
+      margin-bottom: 3px;
+    }
+
+    .nav-btn.active {
+      color: var(--green);
+      background: rgba(85,219,136,.11);
+    }
+
+    @media (max-width: 650px) {
+      .app { padding: 14px 13px 92px; }
+      .stats-grid { grid-template-columns: repeat(2, 1fr); }
+      .categories { grid-template-columns: repeat(2, 1fr); }
+      .form-grid { grid-template-columns: 1fr; }
+      .level-row { grid-template-columns: 1fr; }
+      .hero { padding: 18px; }
+      .brand h1 { font-size: 15px; }
+      .mission-xp { display: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <section class="auth-screen" id="authScreen">
+    <div class="auth-box">
+      <div class="auth-logo">007</div>
+      <h1>MISSÕES 007</h1>
+      <p>Crie pequenas vitórias todos os dias e evolua missão após missão.</p>
+<div class="card">
+  <h3 style="margin-top:0">Aplicativo</h3>
+  <p style="color:var(--muted);line-height:1.55">
+    Instale o Missões 007 no celular ou computador para acessar como aplicativo.
+  </p>
+
+  <button
+    class="outline-btn hidden"
+    id="installAppBtn"
+    onclick="installPwa()"
+  >
+    ⬇️ Instalar Missões 007
+  </button>
+
+  <div id="installHelp" style="color:var(--muted);font-size:13px">
+    Quando disponível, o navegador mostrará a opção de instalação.
+  </div>
+</div>
+
+      <div class="auth-tabs">
+        <button id="loginTab" class="auth-tab active" onclick="setAuthMode('login')">Entrar</button>
+        <button id="registerTab" class="auth-tab" onclick="setAuthMode('register')">Criar conta</button>
+      </div>
+
+      <form class="auth-form" onsubmit="handleAuth(event)">
+        <div id="nameWrap" class="hidden">
+          <label for="authName">Nome de agente</label>
+          <input id="authName" maxlength="25" placeholder="Ex.: Agente Luna" />
+        </div>
+
+        <div>
+          <label for="authEmail">E-mail</label>
+          <input id="authEmail" type="email" required placeholder="voce@email.com" />
+        </div>
+
+        <div>
+          <label for="authPassword">Senha</label>
+          <input id="authPassword" type="password" required minlength="6" placeholder="Mínimo de 6 caracteres" />
+        </div>
+
+        <button class="primary-btn" id="authSubmit" type="submit">Entrar na operação</button>
+      </form>
+
+      <button class="auth-link" onclick="recoverPassword()">Esqueci minha senha</button>
+      <div class="auth-message" id="authMessage"></div>
+    </div>
+  </section>
+
+  <main class="app hidden" id="app">
+    <header>
+      <div class="brand">
+        <div class="brand-icon">007</div>
+        <div>
+          <h1>MISSÕES 007</h1>
+          <p>Pequenas ações. Grandes resultados.</p>
+        </div>
+      </div>
+
+      <div class="top-actions">
+        <button class="icon-btn" title="Ranking geral" onclick="showSection('ranking')">🏆</button>
+        <button class="icon-btn" title="Perfil e configurações" onclick="showSection('perfil')">⚙️</button>
+      </div>
+    </header>
+
+    <section id="hoje" class="section active">
+      <div class="hero">
+        <div class="eyebrow">Operação do dia</div>
+        <h2 id="greeting">Olá, Agente.</h2>
+        <p>O objetivo não é ser perfeito. É cumprir uma pequena missão de cada vez.</p>
+
+        <div class="level-row">
+          <div>
+            <div class="rank">
+              Patente atual: <strong id="rankName">Recruta</strong>
+              · <span id="xpText">0 / 100 XP</span>
+            </div>
+            <div class="progress"><div id="xpBar"></div></div>
+          </div>
+          <div class="rank">🔥 <strong id="streak">0</strong> dias</div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><span>Missões hoje</span><strong id="todayCount">0/5</strong></div>
+        <div class="stat"><span>XP total</span><strong id="totalXp">0</strong></div>
+        <div class="stat"><span>Operações</span><strong id="completedDays">0</strong></div>
+        <div class="stat"><span>Medalhas</span><strong id="medalCount">0</strong></div>
+      </div>
+
+      <div class="section-title">
+        <h3>Missões de hoje</h3>
+        <small id="todayDate"></small>
+      </div>
+
+      <div class="card" id="missionList"></div>
+      <button class="primary-btn" onclick="showSection('lancamentos')">＋ Adicionar missão à operação</button>
+
+      <div class="card challenge">
+        <div class="eyebrow">Desafio semanal</div>
+        <h3>Disciplina em movimento</h3>
+        <p>Conclua 20 missões nesta semana para ganhar <strong>+60 XP</strong>.</p>
+        <div class="progress"><div id="challengeBar"></div></div>
+        <small id="challengeStatus">0 de 20 missões</small>
+        <button id="claimWeeklyBtn" class="outline-btn hidden" style="margin-top:14px;color:var(--yellow)" onclick="claimWeeklyReward()">
+          Resgatar recompensa de +60 XP
+        </button>
+      </div>
+    </section>
+
+    <section id="lancamentos" class="section">
+      <div class="section-title">
+        <h3>Central de missões</h3>
+        <small>Escolha ou crie uma missão simples.</small>
+      </div>
+
+      <div class="categories" id="categories"></div>
+
+      <div class="card">
+        <h3 style="margin-top:0">Criar missão personalizada</h3>
+        <div class="form-grid">
+          <input id="customMission" maxlength="70" placeholder="Ex.: organizar minha mesa por 5 minutos" />
+          <select id="customCategory">
+            <option>Disciplina</option>
+            <option>Conhecimento</option>
+            <option>Corpo</option>
+            <option>Coragem</option>
+            <option>Espiritualidade</option>
+            <option>Responsabilidade</option>
+          </select>
+        </div>
+        <button class="primary-btn" onclick="addCustomMission()">
+          Adicionar à operação · vale +10 XP ao concluir
+        </button>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-top:0">Missões sugeridas</h3>
+        <div id="suggestionList"></div>
+      </div>
+    </section>
+
+    <section id="resumo" class="section">
+      <div class="section-title">
+        <h3>Resumo da operação</h3>
+        <small>Registre sua evolução de hoje.</small>
+      </div>
+
+      <div class="card">
+        <label for="dailyScore">Nota para o seu dia (0 a 10)</label>
+        <select id="dailyScore" style="margin:8px 0 14px"></select>
+
+        <label for="easyField">O que foi mais fácil hoje?</label>
+        <input id="easyField" placeholder="Ex.: beber água logo cedo" style="margin:8px 0 14px" />
+
+        <label for="reflectionField">O que você vai melhorar amanhã?</label>
+        <textarea id="reflectionField" placeholder="Ex.: deixar a primeira missão pronta na noite anterior."></textarea>
+
+        <button class="primary-btn" onclick="saveDailySummary()">Salvar relatório diário</button>
+      </div>
+
+      <div class="section-title">
+        <h3>Calendário mensal</h3>
+        <small id="monthName"></small>
+      </div>
+
+      <div class="card"><div class="calendar" id="calendar"></div></div>
+
+      <div class="card">
+        <h3 style="margin-top:0">Últimos relatórios</h3>
+        <div id="historyList"></div>
+      </div>
+    </section>
+
+    <section id="graficos" class="section">
+      <div class="section-title">
+        <h3>Inteligência de progresso</h3>
+        <small>Dados de toda a sua trajetória.</small>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-top:0">Missões concluídas — últimos 7 dias</h3>
+        <div class="bars" id="weeklyChart"></div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-top:0">Desempenho por categoria</h3>
+        <p style="color:var(--muted);font-size:13px">Total de missões concluídas desde o início.</p>
+        <div id="categoryStats"></div>
+      </div>
+
+      <div class="section-title">
+        <h3>Medalhas</h3>
+        <small>Conquistas desbloqueadas.</small>
+      </div>
+
+      <div class="medals" id="medals"></div>
+    </section>
+
+    <section id="ranking" class="section">
+      <div class="section-title">
+        <h3>Ranking geral</h3>
+        <small>Os 10 agentes mais pontuados.</small>
+      </div>
+
+      <div class="card">
+        <div class="rank" style="margin-bottom:14px">
+          Sua posição global: <strong id="myGlobalRank">--</strong>
+        </div>
+
+        <div style="overflow-x:auto">
+          <table class="ranking-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Agente</th>
+                <th>Patente</th>
+                <th>XP</th>
+              </tr>
+            </thead>
+            <tbody id="rankingList"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <section id="perfil" class="section">
+      <div class="section-title">
+        <h3>Perfil do agente</h3>
+        <small>Configurações do sistema.</small>
+      </div>
+
+      <div class="card">
+        <label for="agentName">Nome do agente</label>
+        <input id="agentName" maxlength="25" placeholder="Digite seu nome" style="margin:8px 0 14px" />
+        <button class="primary-btn" onclick="saveProfile()">Salvar perfil</button>
+      </div>
+
+      <div class="card">
+        <div class="settings-row">
+          <div>
+            <b>Tema claro</b><br>
+            <small style="color:var(--muted)">Alterar aparência do sistema</small>
+          </div>
+          <input class="toggle" id="themeToggle" type="checkbox" onchange="toggleTheme()" />
+        </div>
+
+        <div class="settings-row">
+          <div>
+            <b>Lembrete diário</b><br>
+            <small style="color:var(--muted)">Receber aviso enquanto o sistema estiver aberto</small>
+          </div>
+          <input class="toggle" id="notifyToggle" type="checkbox" onchange="toggleNotifications()" />
+        </div>
+
+        <div class="settings-row">
+          <div><b>Horário do lembrete</b></div>
+          <input type="time" id="notificationTime" style="max-width:130px" onchange="saveNotificationTime()" />
+        </div>
+      </div>
+
+      <div class="card">
+        <h3 style="margin-top:0">Conta</h3>
+        <p id="accountEmail" style="color:var(--muted);line-height:1.55"></p>
+        <button class="outline-btn" onclick="logout()">Sair da conta</button>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav hidden" id="bottomNav">
+    <button class="nav-btn active" data-page="hoje" onclick="showSection('hoje')"><span>🎯</span>Hoje</button>
+    <button class="nav-btn" data-page="lancamentos" onclick="showSection('lancamentos')"><span>➕</span>Missões</button>
+    <button class="nav-btn" data-page="resumo" onclick="showSection('resumo')"><span>📋</span>Resumo</button>
+    <button class="nav-btn" data-page="graficos" onclick="showSection('graficos')"><span>📊</span>Progresso</button>
+    <button class="nav-btn" data-page="ranking" onclick="showSection('ranking')"><span>🏆</span>Ranking</button>
+  </nav>
+
+  <script>
+    /* =====================================================
+       CONFIGURAÇÃO SUPABASE
+       ===================================================== */
+
+    const SUPABASE_URL = "https://lomgftslygmkjxzmoqru.supabase.co";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Yc_tYafVPXK6t1wqBe2q5Q_IBSJ8OFK";
+    const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+let deferredInstallPrompt = null;
+
+/*
+  Gere suas chaves VAPID no passo 9 e cole somente a chave pública aqui.
+  A chave privada nunca deve ir para este arquivo.
+*/
+const VAPID_PUBLIC_KEY = "BK0HEDM8JXAvIV2-g6_kmBRv9YHN7uYRyvimaOm6ISuODAvqhiywD9VEaaZbzkhCh5Gvqgekr6lMuli_qjiDlxo";
+
+    const CATEGORIES = {
+      "Disciplina": {
+        icon: "🎯",
+        missions: [
+          "Arrumar a cama",
+          "Ficar 10 minutos sem celular",
+          "Fazer uma tarefa pendente",
+          "Organizar um pequeno espaço"
+        ]
+      },
+      "Conhecimento": {
+        icon: "📚",
+        missions: [
+          "Ler uma página",
+          "Estudar por 5 minutos",
+          "Anotar uma ideia importante",
+          "Assistir a uma aula curta"
+        ]
+      },
+      "Corpo": {
+        icon: "💪",
+        missions: [
+          "Beber um copo de água",
+          "Caminhar 5 minutos",
+          "Alongar por 2 minutos",
+          "Comer uma fruta"
+        ]
+      },
+      "Coragem": {
+        icon: "🦁",
+        missions: [
+          "Enviar uma mensagem pendente",
+          "Pedir ajuda se precisar",
+          "Dar bom dia para alguém",
+          "Fazer algo que estava adiando"
+        ]
+      },
+      "Espiritualidade": {
+        icon: "✨",
+        missions: [
+          "Agradecer por 3 coisas",
+          "Respirar profundamente 3 vezes",
+          "Fazer uma oração ou reflexão",
+          "Escrever um sentimento"
+        ]
+      },
+      "Responsabilidade": {
+        icon: "🛡️",
+        missions: [
+          "Guardar 3 objetos",
+          "Lavar uma louça",
+          "Preparar a mochila ou bolsa",
+          "Responder uma mensagem importante"
+        ]
+      }
+    };
+
+    const DEFAULT_MISSIONS = [
+      { name: "Beber um copo de água", category: "Corpo" },
+      { name: "Arrumar a cama", category: "Disciplina" },
+      { name: "Ler uma página", category: "Conhecimento" },
+      { name: "Caminhar 5 minutos", category: "Corpo" },
+      { name: "Agradecer por 3 coisas", category: "Espiritualidade" }
+    ];
+
+    const RANKS = [
+      { name: "Recruta", xp: 0 },
+      { name: "Agente", xp: 100 },
+      { name: "Especialista", xp: 300 },
+      { name: "Elite", xp: 650 },
+      { name: "Comandante", xp: 1200 },
+      { name: "Lenda 007", xp: 2000 }
+    ];
+
+    let authMode = "login";
+
+    let state = {
+      user: null,
+      profile: null,
+      missions: [],
+      completions: [],
+      logs: [],
+      selectedCategory: "Disciplina"
+    };
+
+    function dateKey(date = new Date()) {
+      const y = date.getFullYear();
+      const m = String(date.getMonth() + 1).padStart(2, "0");
+      const d = String(date.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    }
+
+    function getWeekStart() {
+      const date = new Date();
+      const day = date.getDay();
+      const diff = day === 0 ? -6 : 1 - day;
+      date.setDate(date.getDate() + diff);
+      date.setHours(0, 0, 0, 0);
+      return dateKey(date);
+    }
+
+    function dateBR(date = new Date()) {
+      return date.toLocaleDateString("pt-BR", {
+        day: "2-digit",
+        month: "2-digit",
+        year: "numeric"
+      });
+    }
+
+    function escapeHTML(text) {
+      return String(text ?? "").replace(/[&<>"']/g, char => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char]));
+    }
+
+    function createMissionRef() {
+      return `mission-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
+    }
+
+    function showMessage(text) {
+      const box = document.getElementById("authMessage");
+      box.textContent = text;
+      box.style.display = "block";
+    }
+
+    function clearMessage() {
+      const box = document.getElementById("authMessage");
+      box.style.display = "none";
+      box.textContent = "";
+    }
+
+    function setAuthMode(mode) {
+      authMode = mode;
+      clearMessage();
+
+      document.getElementById("loginTab").classList.toggle("active", mode === "login");
+      document.getElementById("registerTab").classList.toggle("active", mode === "register");
+      document.getElementById("nameWrap").classList.toggle("hidden", mode !== "register");
+      document.getElementById("authSubmit").textContent =
+        mode === "login" ? "Entrar na operação" : "Criar conta de agente";
+    }
+
+    async function handleAuth(event) {
+      event.preventDefault();
+      clearMessage();
+
+      const email = document.getElementById("authEmail").value.trim();
+      const password = document.getElementById("authPassword").value;
+      const displayName = document.getElementById("authName").value.trim();
+
+      if (authMode === "register") {
+        if (displayName.length < 2) {
+          showMessage("Digite um nome de agente com pelo menos 2 caracteres.");
+          return;
+        }
+
+        const { data, error } = await supa.auth.signUp({
+          email,
+          password,
+          options: {
+            data: { display_name: displayName }
+          }
+        });
+
+        if (error) {
+          showMessage(error.message);
+          return;
+        }
+
+        if (!data.session) {
+          showMessage("Conta criada. Verifique seu e-mail para confirmar o cadastro antes de entrar.");
+        } else {
+          showMessage("Conta criada com sucesso. Carregando sua operação...");
+        }
+      } else {
+        const { error } = await supa.auth.signInWithPassword({ email, password });
+
+        if (error) {
+          showMessage("Não foi possível entrar: " + error.message);
+        }
+      }
+    }
+
+    async function recoverPassword() {
+      const email = document.getElementById("authEmail").value.trim();
+
+      if (!email) {
+        showMessage("Digite seu e-mail primeiro para receber o link de recuperação.");
+        return;
+      }
+
+      const { error } = await supa.auth.resetPasswordForEmail(email);
+
+      if (error) {
+        showMessage(error.message);
+        return;
+      }
+
+      showMessage("Enviamos um link para redefinir sua senha. Verifique seu e-mail.");
+    }
+
+    async function logout() {
+      await supa.auth.signOut();
+      state = { user: null, profile: null, missions: [], completions: [], logs: [], selectedCategory: "Disciplina" };
+      document.getElementById("app").classList.add("hidden");
+      document.getElementById("bottomNav").classList.add("hidden");
+      document.getElementById("authScreen").classList.remove("hidden");
+      setAuthMode("login");
+    }
+
+    async function loadProfile() {
+      const { data, error } = await supa
+        .from("profiles")
+        .select("*")
+        .eq("id", state.user.id)
+        .single();
+
+      if (error) {
+        console.error(error);
+        alert("Não foi possível carregar o perfil. Confira se o SQL do banco foi executado.");
+        return;
+      }
+
+      state.profile = data;
+      document.body.classList.toggle("light", data.theme === "light");
+    }
+
+    async function createDefaultMissionsIfNeeded() {
+      const today = dateKey();
+
+      const { data: existing, error } = await supa
+        .from("daily_missions")
+        .select("*")
+        .eq("user_id", state.user.id)
+        .eq("mission_date", today);
+
+      if (error) {
+        console.error(error);
+        return;
+      }
+
+      if (existing.length > 0) return;
+
+      const rows = DEFAULT_MISSIONS.map((mission, index) => ({
+        user_id: state.user.id,
+        mission_date: today,
+        mission_ref: `default-${today}-${index + 1}`,
+        name: mission.name,
+        category: mission.category,
+        position: index + 1
+      }));
+
+      const { error: insertError } = await supa.from("daily_missions").insert(rows);
+      if (insertError) console.error(insertError);
+    }
+
+    async function loadUserData() {
+      if (!state.user) return;
+
+      await loadProfile();
+      await createDefaultMissionsIfNeeded();
+
+      const today = dateKey();
+
+      const [
+        missionsResponse,
+        completionsResponse,
+        logsResponse
+      ] = await Promise.all([
+        supa
+          .from("daily_missions")
+          .select("*")
+          .eq("user_id", state.user.id)
+          .eq("mission_date", today)
+          .order("position", { ascending: true }),
+
+        supa
+          .from("mission_completions")
+          .select("*")
+          .eq("user_id", state.user.id)
+          .order("mission_date", { ascending: false })
+          .range(0, 4999),
+
+        supa
+          .from("daily_logs")
+          .select("*")
+          .eq("user_id", state.user.id)
+          .order("log_date", { ascending: false })
+          .range(0, 999)
+      ]);
+
+      if (missionsResponse.error) console.error(missionsResponse.error);
+      if (completionsResponse.error) console.error(completionsResponse.error);
+      if (logsResponse.error) console.error(logsResponse.error);
+
+      state.missions = missionsResponse.data || [];
+      state.completions = completionsResponse.data || [];
+      state.logs = logsResponse.data || [];
+
+      renderAll();
+    }
+
+    function getRank() {
+      const xp = state.profile?.xp || 0;
+      let current = RANKS[0];
+      let next = RANKS[1];
+
+      RANKS.forEach((rank, index) => {
+        if (xp >= rank.xp) {
+          current = rank;
+          next = RANKS[index + 1] || null;
+        }
+      });
+
+      return { current, next };
+    }
+
+    function isDone(missionRef) {
+      return state.completions.some(
+        item => item.mission_date === dateKey() && item.mission_ref === missionRef
+      );
+    }
+
+    function getTodayDone() {
+      return state.completions.filter(item => item.mission_date === dateKey()).length;
+    }
+
+    function getCompletionMap() {
+      const map = {};
+
+      state.completions.forEach(item => {
+        map[item.mission_date] = (map[item.mission_date] || 0) + 1;
+      });
+
+      return map;
+    }
+
+    function getCompletedDays() {
+      return Object.values(getCompletionMap()).filter(total => total >= 5).length;
+    }
+
+    function getStreak() {
+      const map = getCompletionMap();
+      let streak = 0;
+      const cursor = new Date();
+
+      if ((map[dateKey(cursor)] || 0) < 1) {
+        cursor.setDate(cursor.getDate() - 1);
+      }
+
+      while ((map[dateKey(cursor)] || 0) >= 1) {
+        streak++;
+        cursor.setDate(cursor.getDate() - 1);
+      }
+
+      return streak;
+    }
+
+    function getWeekTotal() {
+      const start = getWeekStart();
+      const end = new Date(start + "T12:00:00");
+      end.setDate(end.getDate() + 7);
+
+      return state.completions.filter(item => {
+        return item.mission_date >= start && item.mission_date < dateKey(end);
+      }).length;
+    }
+
+    function showSection(id) {
+      document.querySelectorAll(".section").forEach(section => section.classList.remove("active"));
+      document.getElementById(id).classList.add("active");
+
+      document.querySelectorAll(".nav-btn").forEach(button => {
+        button.classList.toggle("active", button.dataset.page === id);
+      });
+
+      if (id === "lancamentos") renderLaunches();
+      if (id === "resumo") renderSummary();
+      if (id === "graficos") renderCharts();
+      if (id === "ranking") renderRanking();
+      if (id === "perfil") renderProfile();
+    }
+
+    function renderAll() {
+      renderHome();
+      renderLaunches();
+      renderProfile();
+    }
+
+    function renderHome() {
+      if (!state.profile) return;
+
+      const hour = new Date().getHours();
+      const greeting = hour < 12 ? "Bom dia" : hour < 18 ? "Boa tarde" : "Boa noite";
+      const agentName = state.profile.display_name || "Agente";
+
+      document.getElementById("greeting").textContent = `${greeting}, Agente ${agentName}.`;
+
+      const rank = getRank();
+      const xp = state.profile.xp || 0;
+      const nextXp = rank.next?.xp || rank.current.xp;
+      const progress = rank.next
+        ? ((xp - rank.current.xp) / (nextXp - rank.current.xp)) * 100
+        : 100;
+
+      document.getElementById("rankName").textContent = state.profile.rank_name || rank.current.name;
+      document.getElementById("xpText").textContent = rank.next ? `${xp} / ${nextXp} XP` : `${xp} XP — nível máximo`;
+      document.getElementById("xpBar").style.width = `${Math.min(100, progress)}%`;
+
+      document.getElementById("streak").textContent = getStreak();
+      document.getElementById("todayCount").textContent = `${getTodayDone()}/${state.missions.length}`;
+      document.getElementById("totalXp").textContent = xp;
+      document.getElementById("completedDays").textContent = getCompletedDays();
+      document.getElementById("todayDate").textContent = dateBR();
+
+      const list = document.getElementById("missionList");
+      list.innerHTML = "";
+
+      if (!state.missions.length) {
+        list.innerHTML = `<div class="empty">Nenhuma missão nesta operação. Adicione uma missão simples.</div>`;
+      }
+
+      state.missions.forEach(mission => {
+        const done = isDone(mission.mission_ref);
+        const icon = CATEGORIES[mission.category]?.icon || "🎯";
+
+        list.innerHTML += `
+          <div class="mission ${done ? "done" : ""}">
+            <button class="check" onclick="toggleMission('${mission.mission_ref}')">${done ? "✓" : ""}</button>
+            <div class="mission-info">
+              <span class="mission-name">${escapeHTML(mission.name)}</span>
+              <span class="tag">${icon} ${escapeHTML(mission.category)}</span>
+            </div>
+            <span class="mission-xp">${done ? "CONCLUÍDA" : "+10 XP"}</span>
+            <button class="delete-btn" title="Remover missão" onclick="removeMission('${mission.id}', '${mission.mission_ref}')">×</button>
+          </div>
+        `;
+      });
+
+      const weekTotal = getWeekTotal();
+      document.getElementById("challengeStatus").textContent = `${weekTotal} de 20 missões`;
+      document.getElementById("challengeBar").style.width = `${Math.min(100, weekTotal / 20 * 100)}%`;
+      document.getElementById("claimWeeklyBtn").classList.toggle("hidden", weekTotal < 20);
+
+      document.getElementById("medalCount").textContent = getMedals().filter(item => item.ok).length;
+    }
+
+    async function toggleMission(missionRef) {
+      const mission = state.missions.find(item => item.mission_ref === missionRef);
+      if (!mission) return;
+
+      const completion = state.completions.find(
+        item => item.mission_date === dateKey() && item.mission_ref === missionRef
+      );
+
+      if (completion) {
+        const { error } = await supa
+          .from("mission_completions")
+          .delete()
+          .eq("id", completion.id);
+
+        if (error) {
+          alert(error.message);
+          return;
+        }
+      } else {
+        const { error } = await supa
+          .from("mission_completions")
+          .insert({
+            user_id: state.user.id,
+            mission_date: dateKey(),
+            mission_ref: mission.mission_ref,
+            mission_name: mission.name,
+            category: mission.category,
+            xp_awarded: 10
+          });
+
+        if (error) {
+          alert(error.message);
+          return;
+        }
+      }
+
+      await loadUserData();
+    }
+
+    async function removeMission(id, missionRef) {
+      const mission = state.missions.find(item => item.id === id);
+      if (!mission) return;
+
+      if (!confirm(`Remover a missão "${mission.name}" da operação de hoje?`)) return;
+
+      const completion = state.completions.find(
+        item => item.mission_date === dateKey() && item.mission_ref === missionRef
+      );
+
+      if (completion) {
+        const { error: completionError } = await supa
+          .from("mission_completions")
+          .delete()
+          .eq("id", completion.id);
+
+        if (completionError) {
+          alert(completionError.message);
+          return;
+        }
+      }
+
+      const { error } = await supa
+        .from("daily_missions")
+        .delete()
+        .eq("id", id);
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      await loadUserData();
+    }
+
+    function renderLaunches() {
+      const categoryBox = document.getElementById("categories");
+      categoryBox.innerHTML = "";
+
+      Object.entries(CATEGORIES).forEach(([name, info]) => {
+        const active = name === state.selectedCategory ? "active" : "";
+
+        categoryBox.innerHTML += `
+          <button class="category ${active}" onclick="selectCategory('${name}')">
+            <span class="emoji">${info.icon}</span>
+            <b>${name}</b>
+            <small>${info.missions.length} missões</small>
+          </button>
+        `;
+      });
+
+      renderSuggestions();
+    }
+
+    function selectCategory(category) {
+      state.selectedCategory = category;
+      renderLaunches();
+    }
+
+    function renderSuggestions() {
+      const category = state.selectedCategory;
+      const box = document.getElementById("suggestionList");
+      box.innerHTML = "";
+
+      CATEGORIES[category].missions.forEach((name, index) => {
+        box.innerHTML += `
+          <div class="mission">
+            <div class="mission-info">
+              <span class="mission-name">${escapeHTML(name)}</span>
+              <span class="tag">${CATEGORIES[category].icon} ${category}</span>
+            </div>
+            <button class="outline-btn" onclick="addMission('${escapeHTML(name).replace(/'/g, "\\'")}', '${category}', ${index})">
+              Adicionar
+            </button>
+          </div>
+        `;
+      });
+    }
+
+    async function addMission(name, category, position = 99) {
+      if (state.missions.length >= 7) {
+        alert("Sua operação já possui 7 missões. Conclua ou remova uma antes de adicionar outra.");
+        return;
+      }
+
+      const { error } = await supa
+        .from("daily_missions")
+        .insert({
+          user_id: state.user.id,
+          mission_date: dateKey(),
+          mission_ref: createMissionRef(),
+          name,
+          category,
+          position: state.missions.length + position + 1
+        });
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      await loadUserData();
+      showSection("hoje");
+    }
+
+    async function addCustomMission() {
+      const input = document.getElementById("customMission");
+      const category = document.getElementById("customCategory").value;
+      const name = input.value.trim();
+
+      if (name.length < 3) {
+        alert("Digite uma missão simples e objetiva.");
+        return;
+      }
+
+      if (state.missions.length >= 7) {
+        alert("Sua operação já possui 7 missões. Remova uma antes de adicionar outra.");
+        return;
+      }
+
+      const { error: customError } = await supa
+        .from("custom_missions")
+        .insert({
+          user_id: state.user.id,
+          name,
+          category
+        });
+
+      if (customError) {
+        alert(customError.message);
+        return;
+      }
+
+      await addMission(name, category, 99);
+      input.value = "";
+    }
+    function renderSummary() {
+      const score = document.getElementById("dailyScore");
+
+      if (!score.options.length) {
+        for (let i = 0; i <= 10; i++) {
+          score.innerHTML += `<option value="${i}">${i}</option>`;
+        }
+      }
+
+      const todayLog = state.logs.find(item => item.log_date === dateKey());
+
+      document.getElementById("dailyScore").value = todayLog?.daily_score ?? 5;
+      document.getElementById("easyField").value = todayLog?.easiest_mission ?? "";
+      document.getElementById("reflectionField").value = todayLog?.reflection ?? "";
+
+      renderCalendar();
+      renderHistory();
+    }
+
+    async function saveDailySummary() {
+      const payload = {
+        user_id: state.user.id,
+        log_date: dateKey(),
+        daily_score: Number(document.getElementById("dailyScore").value),
+        easiest_mission: document.getElementById("easyField").value.trim(),
+        reflection: document.getElementById("reflectionField").value.trim(),
+        updated_at: new Date().toISOString()
+      };
+
+      const { error } = await supa
+        .from("daily_logs")
+        .upsert(payload, { onConflict: "user_id,log_date" });
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      alert("Relatório diário salvo com sucesso.");
+      await loadUserData();
+      renderSummary();
+    }
+
+    function renderCalendar() {
+      const calendar = document.getElementById("calendar");
+      const now = new Date();
+      const year = now.getFullYear();
+      const month = now.getMonth();
+      const map = getCompletionMap();
+
+      document.getElementById("monthName").textContent = now.toLocaleDateString("pt-BR", {
+        month: "long",
+        year: "numeric"
+      });
+
+      calendar.innerHTML = ["D", "S", "T", "Q", "Q", "S", "S"]
+        .map(day => `<div class="weekday">${day}</div>`)
+        .join("");
+
+      const firstDay = new Date(year, month, 1).getDay();
+
+      for (let i = 0; i < firstDay; i++) {
+        calendar.innerHTML += `<div></div>`;
+      }
+
+      const totalDays = new Date(year, month + 1, 0).getDate();
+
+      for (let day = 1; day <= totalDays; day++) {
+        const current = new Date(year, month, day);
+        const key = dateKey(current);
+        const total = map[key] || 0;
+
+        let className = "day";
+
+        if (key === dateKey()) className += " today";
+        if (total >= 5) className += " complete";
+        else if (total > 0) className += " partial";
+
+        calendar.innerHTML += `
+          <div class="${className}" title="${total ? `${total} missões concluídas` : "Sem missões concluídas"}">
+            ${day}
+          </div>
+        `;
+      }
+    }
+
+    function renderHistory() {
+      const box = document.getElementById("historyList");
+      const map = getCompletionMap();
+      const logs = [...state.logs].sort((a, b) => b.log_date.localeCompare(a.log_date)).slice(0, 7);
+
+      box.innerHTML = "";
+
+      if (!logs.length) {
+        box.innerHTML = `<div class="empty">Nenhum relatório salvo ainda.</div>`;
+        return;
+      }
+
+      logs.forEach(log => {
+        const formattedDate = new Date(`${log.log_date}T12:00:00`).toLocaleDateString("pt-BR");
+        const reflection = log.reflection
+          ? escapeHTML(log.reflection)
+          : "Sem observação registrada.";
+
+        box.innerHTML += `
+          <div class="mission">
+            <div class="mission-info">
+              <span class="mission-name">
+                ${formattedDate} · ${map[log.log_date] || 0} missões · Nota ${log.daily_score ?? "-"}
+              </span>
+              <small style="color:var(--muted)">${reflection}</small>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    function renderCharts() {
+      const chart = document.getElementById("weeklyChart");
+      chart.innerHTML = "";
+
+      const map = getCompletionMap();
+      const days = [];
+
+      for (let i = 6; i >= 0; i--) {
+        const current = new Date();
+        current.setDate(current.getDate() - i);
+
+        const key = dateKey(current);
+
+        days.push({
+          label: current
+            .toLocaleDateString("pt-BR", { weekday: "short" })
+            .replace(".", "")
+            .slice(0, 3),
+          count: map[key] || 0
+        });
+      }
+
+      const max = Math.max(...days.map(item => item.count), 5);
+
+      days.forEach(day => {
+        chart.innerHTML += `
+          <div class="bar-item">
+            <div class="bar" style="height:${Math.max(3, (day.count / max) * 145)}px"></div>
+            <small>${day.label}<br>${day.count}</small>
+          </div>
+        `;
+      });
+
+      const categoryTotal = {};
+      Object.keys(CATEGORIES).forEach(category => categoryTotal[category] = 0);
+
+      state.completions.forEach(item => {
+        if (categoryTotal[item.category] !== undefined) {
+          categoryTotal[item.category]++;
+        }
+      });
+
+      const biggest = Math.max(...Object.values(categoryTotal), 1);
+      const categoryBox = document.getElementById("categoryStats");
+      categoryBox.innerHTML = "";
+
+      Object.entries(categoryTotal).forEach(([category, total]) => {
+        categoryBox.innerHTML += `
+          <div class="category-row">
+            <div class="category-row-head">
+              <span>${CATEGORIES[category].icon} ${category}</span>
+              <strong>${total} missão${total === 1 ? "" : "ões"}</strong>
+            </div>
+            <div class="progress">
+              <div style="width:${Math.min(100, (total / biggest) * 100)}%"></div>
+            </div>
+          </div>
+        `;
+      });
+
+      renderMedals();
+    }
+
+    function getMedals() {
+      const xp = state.profile?.xp || 0;
+      const todayDone = getTodayDone();
+
+      return [
+        {
+          name: "Primeiro passo",
+          text: "Conclua sua primeira missão.",
+          ok: xp >= 10
+        },
+        {
+          name: "Operação completa",
+          text: "Conclua 5 missões em um dia.",
+          ok: todayDone >= 5 || getCompletedDays() >= 1
+        },
+        {
+          name: "Em sequência",
+          text: "Use o sistema por 3 dias seguidos.",
+          ok: getStreak() >= 3
+        },
+        {
+          name: "Agente experiente",
+          text: "Alcance 100 XP.",
+          ok: xp >= 100
+        },
+        {
+          name: "Elite em ação",
+          text: "Alcance 650 XP.",
+          ok: xp >= 650
+        },
+        {
+          name: "Desafio semanal",
+          text: "Conclua 20 missões em uma semana.",
+          ok: getWeekTotal() >= 20
+        }
+      ];
+    }
+
+    function renderMedals() {
+      const box = document.getElementById("medals");
+      box.innerHTML = "";
+
+      getMedals().forEach(medal => {
+        box.innerHTML += `
+          <div class="medal ${medal.ok ? "unlocked" : ""}">
+            <b>${medal.ok ? "🏅" : "🔒"} ${medal.name}</b>
+            <small>${medal.text}</small>
+          </div>
+        `;
+      });
+    }
+
+    async function claimWeeklyReward() {
+      const { data, error } = await supa.rpc("claim_weekly_reward");
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      alert(data.message);
+
+      if (data.success) {
+        await loadUserData();
+      }
+    }
+
+  async function renderRanking() {
+  const rankingList = document.getElementById("rankingList");
+
+  rankingList.innerHTML = `
+    <tr>
+      <td colspan="4" class="empty">Carregando ranking...</td>
+    </tr>
+  `;
+
+  const [
+    { data: ranking, error: rankingError },
+    { data: myRank, error: myRankError }
+  ] = await Promise.all([
+    supa.rpc("get_leaderboard_top10"),
+    supa.rpc("get_my_global_rank")
+  ]);
+
+  if (rankingError || myRankError) {
+    console.error("Erro do ranking:", rankingError || myRankError);
+
+    rankingList.innerHTML = `
+      <tr>
+        <td colspan="4" class="empty">
+          Não foi possível carregar o ranking.
+        </td>
+      </tr>
+    `;
+
+    return;
+  }
+
+  document.getElementById("myGlobalRank").textContent =
+    myRank ? `#${myRank}` : "--";
+
+  rankingList.innerHTML = "";
+
+  if (!ranking || ranking.length === 0) {
+    rankingList.innerHTML = `
+      <tr>
+        <td colspan="4" class="empty">
+          Ainda não há agentes no ranking.
+        </td>
+      </tr>
+    `;
+
+    return;
+  }
+
+  ranking.forEach((agent) => {
+    const isMe = agent.id === state.user.id;
+
+    rankingList.innerHTML += `
+      <tr class="${isMe ? "me" : ""}">
+        <td class="rank-position">${agent.rank_position}</td>
+        <td>
+          ${escapeHTML(agent.display_name)}
+          ${isMe ? " · Você" : ""}
+        </td>
+        <td>${escapeHTML(agent.rank_name)}</td>
+        <td>${agent.xp} XP</td>
+      </tr>
+    `;
+  });
+}
+
+
+    function renderProfile() {
+      if (!state.profile || !state.user) return;
+
+      document.getElementById("agentName").value = state.profile.display_name || "";
+      document.getElementById("themeToggle").checked = state.profile.theme === "light";
+      document.getElementById("notifyToggle").checked = !!state.profile.reminder_enabled;
+      document.getElementById("notificationTime").value = state.profile.reminder_time?.slice(0, 5) || "08:00";
+      document.getElementById("accountEmail").textContent = `Conta conectada: ${state.user.email}`;
+    }
+
+    async function saveProfile() {
+      const displayName = document.getElementById("agentName").value.trim();
+
+      if (displayName.length < 2) {
+        alert("Digite um nome de agente com pelo menos 2 caracteres.");
+        return;
+      }
+
+      const { error } = await supa
+        .from("profiles")
+        .update({ display_name: displayName })
+        .eq("id", state.user.id);
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      await loadUserData();
+      alert("Perfil atualizado.");
+    }
+
+    async function toggleTheme() {
+      const theme = document.getElementById("themeToggle").checked ? "light" : "dark";
+
+      document.body.classList.toggle("light", theme === "light");
+
+      const { error } = await supa
+        .from("profiles")
+        .update({ theme })
+        .eq("id", state.user.id);
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      state.profile.theme = theme;
+    }
+function urlBase64ToUint8Array(base64String) {
+  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+  const base64 = (base64String + padding)
+    .replace(/-/g, "+")
+    .replace(/_/g, "/");
+
+  const rawData = window.atob(base64);
+
+  return Uint8Array.from([...rawData].map((character) => character.charCodeAt(0)));
+}
+
+async function registerPwa() {
+  if (!("serviceWorker" in navigator)) {
+    console.warn("Este navegador não suporta Service Workers.");
+    return;
+  }
+
+  try {
+    await navigator.serviceWorker.register("./sw.js");
+    console.log("Service Worker registrado.");
+  } catch (error) {
+    console.error("Erro ao registrar Service Worker:", error);
+  }
+}
+
+window.addEventListener("beforeinstallprompt", (event) => {
+  event.preventDefault();
+  deferredInstallPrompt = event;
+
+  document.getElementById("installAppBtn")?.classList.remove("hidden");
+  document.getElementById("installHelp").textContent =
+    "O aplicativo está pronto para ser instalado.";
+});
+
+window.addEventListener("appinstalled", () => {
+  deferredInstallPrompt = null;
+
+  document.getElementById("installAppBtn")?.classList.add("hidden");
+  document.getElementById("installHelp").textContent =
+    "Missões 007 instalado com sucesso neste dispositivo.";
+});
+
+async function installPwa() {
+  if (!deferredInstallPrompt) {
+    alert(
+      "Use o menu do navegador e escolha “Instalar aplicativo” ou “Adicionar à tela inicial”."
+    );
+    return;
+  }
+
+  deferredInstallPrompt.prompt();
+  await deferredInstallPrompt.userChoice;
+
+  deferredInstallPrompt = null;
+  document.getElementById("installAppBtn")?.classList.add("hidden");
+}
+
+async function toggleNotifications() {
+  const toggle = document.getElementById("notifyToggle");
+
+  if (!toggle.checked) {
+    await disablePushNotifications();
+    return;
+  }
+
+  await enablePushNotifications();
+}
+
+async function enablePushNotifications() {
+  if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+    alert("Seu navegador não suporta notificações push.");
+    document.getElementById("notifyToggle").checked = false;
+    return;
+  }
+
+  if (
+    !VAPID_PUBLIC_KEY ||
+    VAPID_PUBLIC_KEY === "BK0HEDM8JXAvIV2-g6_kmBRv9YHN7uYRyvimaOm6ISuODAvqhiywD9VEaaZbzkhCh5Gvqgekr6lMuli_qjiDlxo"
+  ) {
+    alert("A chave pública VAPID ainda não foi configurada.");
+    document.getElementById("notifyToggle").checked = false;
+    return;
+  }
+
+  const permission = await Notification.requestPermission();
+
+  if (permission !== "granted") {
+    alert("A permissão para enviar notificações não foi liberada.");
+    document.getElementById("notifyToggle").checked = false;
+    return;
+  }
+
+  try {
+    const registration = await navigator.serviceWorker.ready;
+
+    let subscription = await registration.pushManager.getSubscription();
+
+    if (!subscription) {
+      subscription = await registration.pushManager.subscribe({
+        userVisibleOnly: true,
+        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+      });
+    }
+
+    const subscriptionData = subscription.toJSON();
+    const keys = subscriptionData.keys || {};
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+    const { error: subscriptionError } = await supa
+      .from("push_subscriptions")
+      .upsert(
+        {
+          user_id: state.user.id,
+          endpoint: subscription.endpoint,
+          p256dh: keys.p256dh,
+          auth: keys.auth,
+          user_agent: navigator.userAgent
+        },
+        {
+          onConflict: "user_id,endpoint"
+        }
+      );
+
+    if (subscriptionError) throw subscriptionError;
+
+    const { error: profileError } = await supa
+      .from("profiles")
+      .update({
+        reminder_enabled: true,
+        timezone
+      })
+      .eq("id", state.user.id);
+
+    if (profileError) throw profileError;
+
+    state.profile.reminder_enabled = true;
+    state.profile.timezone = timezone;
+
+    document.getElementById("notifyToggle").checked = true;
+
+    alert("Notificações push ativadas. Você receberá seu lembrete mesmo com o aplicativo fechado.");
+  } catch (error) {
+    console.error(error);
+
+    document.getElementById("notifyToggle").checked = false;
+    alert("Não foi possível ativar as notificações: " + error.message);
+  }
+}
+
+async function disablePushNotifications() {
+  try {
+    const registration = await navigator.serviceWorker.ready;
+    const subscription = await registration.pushManager.getSubscription();
+
+    if (subscription) {
+      await supa
+        .from("push_subscriptions")
+        .delete()
+        .eq("user_id", state.user.id)
+        .eq("endpoint", subscription.endpoint);
+
+      await subscription.unsubscribe();
+    }
+
+    const { error } = await supa
+      .from("profiles")
+      .update({ reminder_enabled: false })
+      .eq("id", state.user.id);
+
+    if (error) throw error;
+
+    state.profile.reminder_enabled = false;
+    document.getElementById("notifyToggle").checked = false;
+  } catch (error) {
+    console.error(error);
+    alert("Não foi possível desativar as notificações.");
+  }
+}
+
+async function saveNotificationTime() {
+  const reminderTime = document.getElementById("notificationTime").value;
+  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  const { error } = await supa
+    .from("profiles")
+    .update({
+      reminder_time: reminderTime,
+      timezone
+    })
+    .eq("id", state.user.id);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  state.profile.reminder_time = reminderTime;
+  state.profile.timezone = timezone;
+}
+
+
+    async function initializeApp(user) {
+      state.user = user;
+
+      document.getElementById("authScreen").classList.add("hidden");
+      document.getElementById("app").classList.remove("hidden");
+      document.getElementById("bottomNav").classList.remove("hidden");
+
+      await loadUserData();
+      showSection("hoje");
+    }
+
+    async function init() {
+      await registerPwa();
+
+      const { data: { session } } = await supa.auth.getSession();
+
+      if (session?.user) {
+        await initializeApp(session.user);
+      }
+
+      supa.auth.onAuthStateChange(async (event, session) => {
+        if (event === "SIGNED_IN" && session?.user) {
+          await initializeApp(session.user);
+        }
+
+        if (event === "SIGNED_OUT") {
+          document.getElementById("app").classList.add("hidden");
+          document.getElementById("bottomNav").classList.add("hidden");
+          document.getElementById("authScreen").classList.remove("hidden");
+        }
+      });
+
+      
+    }
+
+    init();
+  </script>
+</body>
+</html>
