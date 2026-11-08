@@ -1132,13 +1132,17 @@ const VAPID_PUBLIC_KEY = "BK0HEDM8JXAvIV2-g6_kmBRv9YHN7uYRyvimaOm6ISuODAvqhiywD9
           return;
         }
 
-        const { data, error } = await supa.auth.signUp({
-          email,
-          password,
-          options: {
-            data: { display_name: displayName }
-          }
-        });
+       const { data, error } = await supa.auth.signUp({
+  email,
+  password,
+  options: {
+    emailRedirectTo: 'https://wian27.github.io/missoes-007/',
+    data: {
+      display_name: displayName
+    }
+  }
+});
+
 
         if (error) {
           showMessage(error.message);
