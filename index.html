@@ -2006,7 +2006,67 @@ window.addEventListener("appinstalled", () => {
     "Missões 007 instalado com sucesso neste dispositivo.";
 });
 
+let deferredPwaPrompt = null;
+
+const installBtn = document.getElementById("installAppBtn");
+
+const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+const isStandalone =
+  window.matchMedia("(display-mode: standalone)").matches ||
+  window.navigator.standalone === true;
+
+// Chrome, Edge e navegadores compatíveis avisam quando o PWA pode ser instalado.
+window.addEventListener("beforeinstallprompt", (event) => {
+  event.preventDefault();
+
+  deferredPwaPrompt = event;
+
+  // Exibe o botão que já existe no seu HTML.
+  installBtn.classList.remove("hidden");
+});
+
+// iPhone não dispara beforeinstallprompt.
+// Por isso, mostramos instruções manuais de instalação.
+if (isIOS && !isStandalone) {
+  installBtn.classList.remove("hidden");
+  installBtn.innerHTML = "📲 Como instalar no iPhone";
+}
+
 async function installPwa() {
+  // Instalação no iPhone/iPad.
+  if (isIOS) {
+    alert(
+      "Para instalar no iPhone: abra o Missões 007 pelo Safari, toque em Compartilhar e depois em “Adicionar à Tela de Início”."
+    );
+    return;
+  }
+
+  // O navegador ainda não liberou a instalação.
+  if (!deferredPwaPrompt) {
+    alert(
+      "A instalação ainda não está disponível. Abra o sistema pelo Chrome, use-o por alguns segundos e tente novamente. Verifique também se o manifest e o service worker estão configurados."
+    );
+    return;
+  }
+
+  // Abre a janela oficial de instalação do navegador.
+  deferredPwaPrompt.prompt();
+
+  const { outcome } = await deferredPwaPrompt.userChoice;
+
+  if (outcome === "accepted") {
+    installBtn.classList.add("hidden");
+  }
+
+  deferredPwaPrompt = null;
+}
+
+window.addEventListener("appinstalled", () => {
+  installBtn.classList.add("hidden");
+  alert("Missões 007 instalado com sucesso!");
+});
+
+/*async function installPwa() {
   if (!deferredInstallPrompt) {
     alert(
       "Use o menu do navegador e escolha “Instalar aplicativo” ou “Adicionar à tela inicial”."
@@ -2019,7 +2079,7 @@ async function installPwa() {
 
   deferredInstallPrompt = null;
   document.getElementById("installAppBtn")?.classList.add("hidden");
-}
+}*/
 
 async function toggleNotifications() {
   const toggle = document.getElementById("notifyToggle");
