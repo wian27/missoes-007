@@ -1,16 +1,17 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#07130f" />
   <title>Missões 007 — Sistema de Evolução</title>
   <link rel="manifest" href="./manifest.webmanifest" />
-<link rel="icon" href="./icon.svg" type="image/svg+xml" />
-<meta name="theme-color" content="#07130f" />
-<meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="Missões 007" />
+  <link rel="icon" href="./icon.svg" type="image/svg+xml" />
+  <meta name="theme-color" content="#07130f" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Missões 007" />
 
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -29,7 +30,7 @@
       --yellow: #f4ce5c;
       --red: #ff6e6e;
       --blue: #68b8ff;
-      --shadow: 0 12px 35px rgba(0,0,0,.28);
+      --shadow: 0 12px 35px rgba(0, 0, 0, .28);
     }
 
     body.light {
@@ -48,7 +49,9 @@
       --shadow: 0 12px 30px rgba(18, 58, 34, .12);
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
 
     body {
       margin: 0;
@@ -56,13 +59,25 @@
       font-family: Arial, Helvetica, sans-serif;
       color: var(--text);
       background:
-        radial-gradient(circle at top right, rgba(85,219,136,.12), transparent 30%),
+        radial-gradient(circle at top right, rgba(85, 219, 136, .12), transparent 30%),
         linear-gradient(135deg, var(--bg), var(--bg2));
     }
 
-    button, input, select, textarea { font: inherit; }
-    button { cursor: pointer; border: 0; }
-    input, select, textarea {
+    button,
+    input,
+    select,
+    textarea {
+      font: inherit;
+    }
+
+    button {
+      cursor: pointer;
+      border: 0;
+    }
+
+    input,
+    select,
+    textarea {
       width: 100%;
       color: var(--text);
       background: var(--card2);
@@ -72,9 +87,14 @@
       outline: none;
     }
 
-    textarea { min-height: 105px; resize: vertical; }
+    textarea {
+      min-height: 105px;
+      resize: vertical;
+    }
 
-    .hidden { display: none !important; }
+    .hidden {
+      display: none !important;
+    }
 
     /* AUTENTICAÇÃO */
     .auth-screen {
@@ -104,7 +124,7 @@
       border-radius: 20px;
       font-size: 27px;
       font-weight: bold;
-      box-shadow: inset 0 0 16px rgba(85,219,136,.18);
+      box-shadow: inset 0 0 16px rgba(85, 219, 136, .18);
     }
 
     .auth-box h1 {
@@ -114,7 +134,7 @@
       letter-spacing: 1px;
     }
 
-    .auth-box > p {
+    .auth-box>p {
       color: var(--muted);
       text-align: center;
       line-height: 1.5;
@@ -144,16 +164,23 @@
       font-weight: bold;
     }
 
-    .auth-form { display: grid; gap: 11px; }
-    .auth-form label { color: var(--muted); font-size: 13px; }
+    .auth-form {
+      display: grid;
+      gap: 11px;
+    }
+
+    .auth-form label {
+      color: var(--muted);
+      font-size: 13px;
+    }
 
     .auth-message {
       display: none;
       margin-top: 14px;
       padding: 11px;
       color: var(--yellow);
-      background: rgba(244,206,92,.1);
-      border: 1px solid rgba(244,206,92,.35);
+      background: rgba(244, 206, 92, .1);
+      border: 1px solid rgba(244, 206, 92, .35);
       border-radius: 10px;
       font-size: 13px;
       line-height: 1.4;
@@ -198,7 +225,7 @@
       color: var(--green);
       font-size: 18px;
       font-weight: bold;
-      box-shadow: inset 0 0 16px rgba(85,219,136,.18);
+      box-shadow: inset 0 0 16px rgba(85, 219, 136, .18);
     }
 
     .brand h1 {
@@ -213,9 +240,13 @@
       color: var(--muted);
     }
 
-    .top-actions { display: flex; gap: 8px; }
+    .top-actions {
+      display: flex;
+      gap: 8px;
+    }
 
-    .icon-btn, .outline-btn {
+    .icon-btn,
+    .outline-btn {
       color: var(--text);
       background: var(--card);
       border: 1px solid var(--line);
@@ -223,10 +254,13 @@
       padding: 10px 12px;
     }
 
-    .icon-btn:hover, .outline-btn:hover { border-color: var(--green); }
+    .icon-btn:hover,
+    .outline-btn:hover {
+      border-color: var(--green);
+    }
 
     .hero {
-      background: linear-gradient(135deg, rgba(85,219,136,.17), rgba(17,44,33,.94));
+      background: linear-gradient(135deg, rgba(85, 219, 136, .17), rgba(17, 44, 33, .94));
       border: 1px solid var(--line);
       border-radius: 20px;
       padding: 22px;
@@ -254,7 +288,11 @@
       line-height: 1.5;
     }
 
-    .level-row, .stats-grid { display: grid; gap: 12px; }
+    .level-row,
+    .stats-grid {
+      display: grid;
+      gap: 12px;
+    }
 
     .level-row {
       grid-template-columns: 1fr auto;
@@ -262,23 +300,25 @@
     }
 
     .rank {
-      background: rgba(0,0,0,.16);
+      background: rgba(0, 0, 0, .16);
       padding: 10px 13px;
       border-radius: 12px;
       font-size: 13px;
     }
 
-    .rank strong { color: var(--yellow); }
+    .rank strong {
+      color: var(--yellow);
+    }
 
     .progress {
       height: 11px;
       overflow: hidden;
-      background: rgba(0,0,0,.24);
+      background: rgba(0, 0, 0, .24);
       border-radius: 99px;
       margin-top: 8px;
     }
 
-    .progress > div {
+    .progress>div {
       height: 100%;
       background: linear-gradient(90deg, var(--green2), var(--green));
       border-radius: inherit;
@@ -305,18 +345,30 @@
       margin-bottom: 7px;
     }
 
-    .stat strong { font-size: 24px; color: var(--green); }
+    .stat strong {
+      font-size: 24px;
+      color: var(--green);
+    }
 
     .section {
       display: none;
       animation: fade .25s ease;
     }
 
-    .section.active { display: block; }
+    .section.active {
+      display: block;
+    }
 
     @keyframes fade {
-      from { opacity: .3; transform: translateY(8px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: .3;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .section-title {
@@ -332,7 +384,9 @@
       font-size: 20px;
     }
 
-    .section-title small { color: var(--muted); }
+    .section-title small {
+      color: var(--muted);
+    }
 
     .card {
       background: var(--card);
@@ -351,7 +405,9 @@
       border-bottom: 1px solid var(--line);
     }
 
-    .mission:last-child { border-bottom: 0; }
+    .mission:last-child {
+      border-bottom: 0;
+    }
 
     .check {
       width: 26px;
@@ -364,14 +420,19 @@
       font-weight: bold;
     }
 
-    .mission.done .check { background: var(--green); }
+    .mission.done .check {
+      background: var(--green);
+    }
 
     .mission.done .mission-name {
       text-decoration: line-through;
       color: var(--muted);
     }
 
-    .mission-info { flex: 1; min-width: 0; }
+    .mission-info {
+      flex: 1;
+      min-width: 0;
+    }
 
     .mission-name {
       display: block;
@@ -419,10 +480,12 @@
 
     .challenge {
       border-left: 4px solid var(--yellow);
-      background: linear-gradient(135deg, rgba(244,206,92,.13), var(--card));
+      background: linear-gradient(135deg, rgba(244, 206, 92, .13), var(--card));
     }
 
-    .challenge strong { color: var(--yellow); }
+    .challenge strong {
+      color: var(--yellow);
+    }
 
     .categories {
       display: grid;
@@ -440,7 +503,10 @@
       min-height: 105px;
     }
 
-    .category.active { border-color: var(--green); background: rgba(85,219,136,.09); }
+    .category.active {
+      border-color: var(--green);
+      background: rgba(85, 219, 136, .09);
+    }
 
     .category .emoji {
       display: block;
@@ -468,14 +534,17 @@
       margin-top: 13px;
     }
 
-    .weekday, .day {
+    .weekday,
+    .day {
       text-align: center;
       font-size: 12px;
       padding: 9px 4px;
       border-radius: 9px;
     }
 
-    .weekday { color: var(--muted); }
+    .weekday {
+      color: var(--muted);
+    }
 
     .day {
       background: var(--card2);
@@ -483,9 +552,20 @@
       min-height: 40px;
     }
 
-    .day.today { border-color: var(--green); }
-    .day.complete { background: rgba(85,219,136,.25); color: var(--green); font-weight: bold; }
-    .day.partial { background: rgba(244,206,92,.17); color: var(--yellow); }
+    .day.today {
+      border-color: var(--green);
+    }
+
+    .day.complete {
+      background: rgba(85, 219, 136, .25);
+      color: var(--green);
+      font-weight: bold;
+    }
+
+    .day.partial {
+      background: rgba(244, 206, 92, .17);
+      color: var(--yellow);
+    }
 
     .bars {
       display: flex;
@@ -495,7 +575,11 @@
       padding-top: 18px;
     }
 
-    .bar-item { flex: 1; text-align: center; min-width: 22px; }
+    .bar-item {
+      flex: 1;
+      text-align: center;
+      min-width: 22px;
+    }
 
     .bar {
       width: 100%;
@@ -511,7 +595,9 @@
       font-size: 10px;
     }
 
-    .category-row { margin: 15px 0; }
+    .category-row {
+      margin: 15px 0;
+    }
 
     .category-row-head {
       display: flex;
@@ -520,7 +606,9 @@
       gap: 10px;
     }
 
-    .category-row-head strong { color: var(--green); }
+    .category-row-head strong {
+      color: var(--green);
+    }
 
     .medals {
       display: grid;
@@ -539,10 +627,14 @@
     .medal.unlocked {
       color: var(--text);
       border-color: var(--yellow);
-      background: rgba(244,206,92,.1);
+      background: rgba(244, 206, 92, .1);
     }
 
-    .medal b { display: block; color: inherit; margin-bottom: 5px; }
+    .medal b {
+      display: block;
+      color: inherit;
+      margin-bottom: 5px;
+    }
 
     .settings-row {
       display: flex;
@@ -553,7 +645,9 @@
       border-bottom: 1px solid var(--line);
     }
 
-    .settings-row:last-child { border-bottom: 0; }
+    .settings-row:last-child {
+      border-bottom: 0;
+    }
 
     .toggle {
       appearance: none;
@@ -577,10 +671,18 @@
       transition: .2s;
     }
 
-    .toggle:checked { background: var(--green2); }
-    .toggle:checked::before { transform: translateX(21px); }
+    .toggle:checked {
+      background: var(--green2);
+    }
 
-    .ranking-table { width: 100%; border-collapse: collapse; }
+    .toggle:checked::before {
+      transform: translateX(21px);
+    }
+
+    .ranking-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
 
     .ranking-table th {
       color: var(--muted);
@@ -597,9 +699,19 @@
       font-size: 14px;
     }
 
-    .ranking-table tr.me { background: rgba(85,219,136,.1); }
-    .ranking-table td:last-child { color: var(--yellow); font-weight: bold; text-align: right; }
-    .ranking-table th:last-child { text-align: right; }
+    .ranking-table tr.me {
+      background: rgba(85, 219, 136, .1);
+    }
+
+    .ranking-table td:last-child {
+      color: var(--yellow);
+      font-weight: bold;
+      text-align: right;
+    }
+
+    .ranking-table th:last-child {
+      text-align: right;
+    }
 
     .rank-position {
       color: var(--green);
@@ -617,8 +729,8 @@
       margin: 10px 0;
       padding: 11px;
       color: var(--yellow);
-      background: rgba(244,206,92,.1);
-      border: 1px solid rgba(244,206,92,.27);
+      background: rgba(244, 206, 92, .1);
+      border: 1px solid rgba(244, 206, 92, .27);
       border-radius: 10px;
       font-size: 13px;
     }
@@ -631,14 +743,16 @@
       display: flex;
       justify-content: center;
       gap: 2px;
-      background: rgba(7,19,15,.94);
+      background: rgba(7, 19, 15, .94);
       border-top: 1px solid var(--line);
       padding: 9px max(8px, calc((100% - 720px) / 2));
       z-index: 20;
       backdrop-filter: blur(10px);
     }
 
-    body.light .bottom-nav { background: rgba(255,255,255,.94); }
+    body.light .bottom-nav {
+      background: rgba(255, 255, 255, .94);
+    }
 
     .nav-btn {
       flex: 1;
@@ -658,18 +772,41 @@
 
     .nav-btn.active {
       color: var(--green);
-      background: rgba(85,219,136,.11);
+      background: rgba(85, 219, 136, .11);
     }
 
     @media (max-width: 650px) {
-      .app { padding: 14px 13px 92px; }
-      .stats-grid { grid-template-columns: repeat(2, 1fr); }
-      .categories { grid-template-columns: repeat(2, 1fr); }
-      .form-grid { grid-template-columns: 1fr; }
-      .level-row { grid-template-columns: 1fr; }
-      .hero { padding: 18px; }
-      .brand h1 { font-size: 15px; }
-      .mission-xp { display: none; }
+      .app {
+        padding: 14px 13px 92px;
+      }
+
+      .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .categories {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .level-row {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        padding: 18px;
+      }
+
+      .brand h1 {
+        font-size: 15px;
+      }
+
+      .mission-xp {
+        display: none;
+      }
     }
   </style>
 </head>
@@ -719,21 +856,17 @@
           <h1>MISSÕES 007</h1>
           <p>Pequenas ações. Grandes resultados.</p>
         </div>
-        <div class="card">
-  <h3 style="margin-top:0">Aplicativo</h3>
+        <div class="card hidden" id="installCard">
+          <h3 style="margin-top:0">Aplicativo</h3>
 
-  <button
-    class="outline-btn hidden"
-    id="installAppBtn"
-    onclick="installPwa()"
-  >
-    ⬇️ Instalar Missões 007
-  </button>
+          <button class="outline-btn hidden" id="installAppBtn" onclick="installPwa()">
+            ⬇️ Instalar Missões 007
+          </button>
 
-  <div id="installHelp" style="color:var(--muted);font-size:13px">
-    Quando disponível, o navegador mostrará a opção de instalação.
-  </div>
-</div>
+          <div id="installHelp" style="color:var(--muted);font-size:13px">
+            Quando disponível, o navegador mostrará a opção de instalação.
+          </div>
+        </div>
       </div>
 
       <div class="top-actions">
@@ -754,7 +887,9 @@
               Patente atual: <strong id="rankName">Recruta</strong>
               · <span id="xpText">0 / 100 XP</span>
             </div>
-            <div class="progress"><div id="xpBar"></div></div>
+            <div class="progress">
+              <div id="xpBar"></div>
+            </div>
           </div>
           <div class="rank">🔥 <strong id="streak">0</strong> dias</div>
         </div>
@@ -779,9 +914,12 @@
         <div class="eyebrow">Desafio semanal</div>
         <h3>Disciplina em movimento</h3>
         <p>Conclua 20 missões nesta semana para ganhar <strong>+60 XP</strong>.</p>
-        <div class="progress"><div id="challengeBar"></div></div>
+        <div class="progress">
+          <div id="challengeBar"></div>
+        </div>
         <small id="challengeStatus">0 de 20 missões</small>
-        <button id="claimWeeklyBtn" class="outline-btn hidden" style="margin-top:14px;color:var(--yellow)" onclick="claimWeeklyReward()">
+        <button id="claimWeeklyBtn" class="outline-btn hidden" style="margin-top:14px;color:var(--yellow)"
+          onclick="claimWeeklyReward()">
           Resgatar recompensa de +60 XP
         </button>
       </div>
@@ -843,7 +981,9 @@
         <small id="monthName"></small>
       </div>
 
-      <div class="card"><div class="calendar" id="calendar"></div></div>
+      <div class="card">
+        <div class="calendar" id="calendar"></div>
+      </div>
 
       <div class="card">
         <h3 style="margin-top:0">Últimos relatórios</h3>
@@ -962,13 +1102,13 @@
     const SUPABASE_URL = "https://lomgftslygmkjxzmoqru.supabase.co";
     const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_Yc_tYafVPXK6t1wqBe2q5Q_IBSJ8OFK";
     const supa = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
-let deferredInstallPrompt = null;
+    let deferredInstallPrompt = null;
 
-/*
-  Gere suas chaves VAPID no passo 9 e cole somente a chave pública aqui.
-  A chave privada nunca deve ir para este arquivo.
-*/
-const VAPID_PUBLIC_KEY = "BK0HEDM8JXAvIV2-g6_kmBRv9YHN7uYRyvimaOm6ISuODAvqhiywD9VEaaZbzkhCh5Gvqgekr6lMuli_qjiDlxo";
+    /*
+      Gere suas chaves VAPID no passo 9 e cole somente a chave pública aqui.
+      A chave privada nunca deve ir para este arquivo.
+    */
+    const VAPID_PUBLIC_KEY = "BK0HEDM8JXAvIV2-g6_kmBRv9YHN7uYRyvimaOm6ISuODAvqhiywD9VEaaZbzkhCh5Gvqgekr6lMuli_qjiDlxo";
 
     const CATEGORIES = {
       "Disciplina": {
@@ -1130,16 +1270,16 @@ const VAPID_PUBLIC_KEY = "BK0HEDM8JXAvIV2-g6_kmBRv9YHN7uYRyvimaOm6ISuODAvqhiywD9
           return;
         }
 
-       const { data, error } = await supa.auth.signUp({
-  email,
-  password,
-  options: {
-    emailRedirectTo: 'https://wian27.github.io/missoes-007/',
-    data: {
-      display_name: displayName
-    }
-  }
-});
+        const { data, error } = await supa.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: 'https://wian27.github.io/missoes-007/',
+            data: {
+              display_name: displayName
+            }
+          }
+        });
 
 
         if (error) {
@@ -1847,27 +1987,27 @@ const VAPID_PUBLIC_KEY = "BK0HEDM8JXAvIV2-g6_kmBRv9YHN7uYRyvimaOm6ISuODAvqhiywD9
       }
     }
 
-  async function renderRanking() {
-  const rankingList = document.getElementById("rankingList");
+    async function renderRanking() {
+      const rankingList = document.getElementById("rankingList");
 
-  rankingList.innerHTML = `
+      rankingList.innerHTML = `
     <tr>
       <td colspan="4" class="empty">Carregando ranking...</td>
     </tr>
   `;
 
-  const [
-    { data: ranking, error: rankingError },
-    { data: myRank, error: myRankError }
-  ] = await Promise.all([
-    supa.rpc("get_leaderboard_top10"),
-    supa.rpc("get_my_global_rank")
-  ]);
+      const [
+        { data: ranking, error: rankingError },
+        { data: myRank, error: myRankError }
+      ] = await Promise.all([
+        supa.rpc("get_leaderboard_top10"),
+        supa.rpc("get_my_global_rank")
+      ]);
 
-  if (rankingError || myRankError) {
-    console.error("Erro do ranking:", rankingError || myRankError);
+      if (rankingError || myRankError) {
+        console.error("Erro do ranking:", rankingError || myRankError);
 
-    rankingList.innerHTML = `
+        rankingList.innerHTML = `
       <tr>
         <td colspan="4" class="empty">
           Não foi possível carregar o ranking.
@@ -1875,16 +2015,16 @@ const VAPID_PUBLIC_KEY = "BK0HEDM8JXAvIV2-g6_kmBRv9YHN7uYRyvimaOm6ISuODAvqhiywD9
       </tr>
     `;
 
-    return;
-  }
+        return;
+      }
 
-  document.getElementById("myGlobalRank").textContent =
-    myRank ? `#${myRank}` : "--";
+      document.getElementById("myGlobalRank").textContent =
+        myRank ? `#${myRank}` : "--";
 
-  rankingList.innerHTML = "";
+      rankingList.innerHTML = "";
 
-  if (!ranking || ranking.length === 0) {
-    rankingList.innerHTML = `
+      if (!ranking || ranking.length === 0) {
+        rankingList.innerHTML = `
       <tr>
         <td colspan="4" class="empty">
           Ainda não há agentes no ranking.
@@ -1892,13 +2032,13 @@ const VAPID_PUBLIC_KEY = "BK0HEDM8JXAvIV2-g6_kmBRv9YHN7uYRyvimaOm6ISuODAvqhiywD9
       </tr>
     `;
 
-    return;
-  }
+        return;
+      }
 
-  ranking.forEach((agent) => {
-    const isMe = agent.id === state.user.id;
+      ranking.forEach((agent) => {
+        const isMe = agent.id === state.user.id;
 
-    rankingList.innerHTML += `
+        rankingList.innerHTML += `
       <tr class="${isMe ? "me" : ""}">
         <td class="rank-position">${agent.rank_position}</td>
         <td>
@@ -1909,8 +2049,8 @@ const VAPID_PUBLIC_KEY = "BK0HEDM8JXAvIV2-g6_kmBRv9YHN7uYRyvimaOm6ISuODAvqhiywD9
         <td>${agent.xp} XP</td>
       </tr>
     `;
-  });
-}
+      });
+    }
 
 
     function renderProfile() {
@@ -1962,248 +2102,248 @@ const VAPID_PUBLIC_KEY = "BK0HEDM8JXAvIV2-g6_kmBRv9YHN7uYRyvimaOm6ISuODAvqhiywD9
 
       state.profile.theme = theme;
     }
-function urlBase64ToUint8Array(base64String) {
-  const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-  const base64 = (base64String + padding)
-    .replace(/-/g, "+")
-    .replace(/_/g, "/");
+    function urlBase64ToUint8Array(base64String) {
+      const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
+      const base64 = (base64String + padding)
+        .replace(/-/g, "+")
+        .replace(/_/g, "/");
 
-  const rawData = window.atob(base64);
+      const rawData = window.atob(base64);
 
-  return Uint8Array.from([...rawData].map((character) => character.charCodeAt(0)));
-}
-
-async function registerPwa() {
-  if (!("serviceWorker" in navigator)) {
-    console.warn("Este navegador não suporta Service Workers.");
-    return;
-  }
-
-  try {
-    await navigator.serviceWorker.register("./sw.js");
-    console.log("Service Worker registrado.");
-  } catch (error) {
-    console.error("Erro ao registrar Service Worker:", error);
-  }
-}
-
-let deferredPwaPrompt = null;
-
-const installBtn = document.getElementById("installAppBtn");
-
-const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-const isStandalone =
-  window.matchMedia("(display-mode: standalone)").matches ||
-  window.navigator.standalone === true;
-
-// Chrome, Edge e navegadores compatíveis avisam quando o PWA pode ser instalado.
-window.addEventListener("beforeinstallprompt", (event) => {
-  event.preventDefault();
-
-  deferredPwaPrompt = event;
-
-  // Exibe o botão que já existe no seu HTML.
-  installBtn.classList.remove("hidden");
-});
-
-// iPhone não dispara beforeinstallprompt.
-// Por isso, mostramos instruções manuais de instalação.
-if (isIOS && !isStandalone) {
-  installBtn.classList.remove("hidden");
-  installBtn.innerHTML = "📲 Como instalar no iPhone";
-}
-
-async function installPwa() {
-  // Instalação no iPhone/iPad.
-  if (isIOS) {
-    alert(
-      "Para instalar no iPhone: abra o Missões 007 pelo Safari, toque em Compartilhar e depois em “Adicionar à Tela de Início”."
-    );
-    return;
-  }
-
-  // O navegador ainda não liberou a instalação.
-  if (!deferredPwaPrompt) {
-    alert(
-      "A instalação ainda não está disponível. Abra o sistema pelo Chrome, use-o por alguns segundos e tente novamente. Verifique também se o manifest e o service worker estão configurados."
-    );
-    return;
-  }
-
-  // Abre a janela oficial de instalação do navegador.
-  deferredPwaPrompt.prompt();
-
-  const { outcome } = await deferredPwaPrompt.userChoice;
-
-  if (outcome === "accepted") {
-    installBtn.classList.add("hidden");
-  }
-
-  deferredPwaPrompt = null;
-}
-
-window.addEventListener("appinstalled", () => {
-  installBtn.classList.add("hidden");
-  alert("Missões 007 instalado com sucesso!");
-});
-
-/*async function installPwa() {
-  if (!deferredInstallPrompt) {
-    alert(
-      "Use o menu do navegador e escolha “Instalar aplicativo” ou “Adicionar à tela inicial”."
-    );
-    return;
-  }
-
-  deferredInstallPrompt.prompt();
-  await deferredInstallPrompt.userChoice;
-
-  deferredInstallPrompt = null;
-  document.getElementById("installAppBtn")?.classList.add("hidden");
-}*/
-
-async function toggleNotifications() {
-  const toggle = document.getElementById("notifyToggle");
-
-  if (!toggle.checked) {
-    await disablePushNotifications();
-    return;
-  }
-
-  await enablePushNotifications();
-}
-
-async function enablePushNotifications() {
-  if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
-    alert("Seu navegador não suporta notificações push.");
-    document.getElementById("notifyToggle").checked = false;
-    return;
-  }
-
-  if (
-    !VAPID_PUBLIC_KEY ||
-    VAPID_PUBLIC_KEY === "BK0HEDM8JXAvIV2-g6_kmBRv9YHN7uYRyvimaOm6ISuODAvqhiywD9VEaaZbzkhCh5Gvqgekr6lMuli_qjiDlxo"
-  ) {
-    alert("A chave pública VAPID ainda não foi configurada.");
-    document.getElementById("notifyToggle").checked = false;
-    return;
-  }
-
-  const permission = await Notification.requestPermission();
-
-  if (permission !== "granted") {
-    alert("A permissão para enviar notificações não foi liberada.");
-    document.getElementById("notifyToggle").checked = false;
-    return;
-  }
-
-  try {
-    const registration = await navigator.serviceWorker.ready;
-
-    let subscription = await registration.pushManager.getSubscription();
-
-    if (!subscription) {
-      subscription = await registration.pushManager.subscribe({
-        userVisibleOnly: true,
-        applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
-      });
+      return Uint8Array.from([...rawData].map((character) => character.charCodeAt(0)));
     }
 
-    const subscriptionData = subscription.toJSON();
-    const keys = subscriptionData.keys || {};
-    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    async function registerPwa() {
+      if (!("serviceWorker" in navigator)) {
+        console.warn("Este navegador não suporta Service Workers.");
+        return;
+      }
 
-    const { error: subscriptionError } = await supa
-      .from("push_subscriptions")
-      .upsert(
-        {
-          user_id: state.user.id,
-          endpoint: subscription.endpoint,
-          p256dh: keys.p256dh,
-          auth: keys.auth,
-          user_agent: navigator.userAgent
-        },
-        {
-          onConflict: "user_id,endpoint"
+      try {
+        await navigator.serviceWorker.register("./sw.js");
+        console.log("Service Worker registrado.");
+      } catch (error) {
+        console.error("Erro ao registrar Service Worker:", error);
+      }
+    }
+
+    let deferredPwaPrompt = null;
+
+    const installBtn = document.getElementById("installAppBtn");
+
+    const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const isStandalone =
+      window.matchMedia("(display-mode: standalone)").matches ||
+      window.navigator.standalone === true;
+
+    // Chrome, Edge e navegadores compatíveis avisam quando o PWA pode ser instalado.
+    window.addEventListener("beforeinstallprompt", (event) => {
+      event.preventDefault();
+
+      deferredPwaPrompt = event;
+
+      // Exibe o botão que já existe no seu HTML.
+      installBtn.classList.remove("hidden");
+    });
+
+    // iPhone não dispara beforeinstallprompt.
+    // Por isso, mostramos instruções manuais de instalação.
+    if (isIOS && !isStandalone) {
+      installBtn.classList.remove("hidden");
+      installBtn.innerHTML = "📲 Como instalar no iPhone";
+    }
+
+    async function installPwa() {
+      // Instalação no iPhone/iPad.
+      if (isIOS) {
+        alert(
+          "Para instalar no iPhone: abra o Missões 007 pelo Safari, toque em Compartilhar e depois em “Adicionar à Tela de Início”."
+        );
+        return;
+      }
+
+      // O navegador ainda não liberou a instalação.
+      if (!deferredPwaPrompt) {
+        alert(
+          "A instalação ainda não está disponível. Abra o sistema pelo Chrome, use-o por alguns segundos e tente novamente. Verifique também se o manifest e o service worker estão configurados."
+        );
+        return;
+      }
+
+      // Abre a janela oficial de instalação do navegador.
+      deferredPwaPrompt.prompt();
+
+      const { outcome } = await deferredPwaPrompt.userChoice;
+
+      if (outcome === "accepted") {
+        installBtn.classList.add("hidden");
+      }
+
+      deferredPwaPrompt = null;
+    }
+
+    window.addEventListener("appinstalled", () => {
+      installBtn.classList.add("hidden");
+      alert("Missões 007 instalado com sucesso!");
+    });
+
+    /*async function installPwa() {
+      if (!deferredInstallPrompt) {
+        alert(
+          "Use o menu do navegador e escolha “Instalar aplicativo” ou “Adicionar à tela inicial”."
+        );
+        return;
+      }
+    
+      deferredInstallPrompt.prompt();
+      await deferredInstallPrompt.userChoice;
+    
+      deferredInstallPrompt = null;
+      document.getElementById("installAppBtn")?.classList.add("hidden");
+    }*/
+
+    async function toggleNotifications() {
+      const toggle = document.getElementById("notifyToggle");
+
+      if (!toggle.checked) {
+        await disablePushNotifications();
+        return;
+      }
+
+      await enablePushNotifications();
+    }
+
+    async function enablePushNotifications() {
+      if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
+        alert("Seu navegador não suporta notificações push.");
+        document.getElementById("notifyToggle").checked = false;
+        return;
+      }
+
+      if (
+        !VAPID_PUBLIC_KEY ||
+        VAPID_PUBLIC_KEY === "BK0HEDM8JXAvIV2-g6_kmBRv9YHN7uYRyvimaOm6ISuODAvqhiywD9VEaaZbzkhCh5Gvqgekr6lMuli_qjiDlxo"
+      ) {
+        alert("A chave pública VAPID ainda não foi configurada.");
+        document.getElementById("notifyToggle").checked = false;
+        return;
+      }
+
+      const permission = await Notification.requestPermission();
+
+      if (permission !== "granted") {
+        alert("A permissão para enviar notificações não foi liberada.");
+        document.getElementById("notifyToggle").checked = false;
+        return;
+      }
+
+      try {
+        const registration = await navigator.serviceWorker.ready;
+
+        let subscription = await registration.pushManager.getSubscription();
+
+        if (!subscription) {
+          subscription = await registration.pushManager.subscribe({
+            userVisibleOnly: true,
+            applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY)
+          });
         }
-      );
 
-    if (subscriptionError) throw subscriptionError;
+        const subscriptionData = subscription.toJSON();
+        const keys = subscriptionData.keys || {};
+        const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
-    const { error: profileError } = await supa
-      .from("profiles")
-      .update({
-        reminder_enabled: true,
-        timezone
-      })
-      .eq("id", state.user.id);
+        const { error: subscriptionError } = await supa
+          .from("push_subscriptions")
+          .upsert(
+            {
+              user_id: state.user.id,
+              endpoint: subscription.endpoint,
+              p256dh: keys.p256dh,
+              auth: keys.auth,
+              user_agent: navigator.userAgent
+            },
+            {
+              onConflict: "user_id,endpoint"
+            }
+          );
 
-    if (profileError) throw profileError;
+        if (subscriptionError) throw subscriptionError;
 
-    state.profile.reminder_enabled = true;
-    state.profile.timezone = timezone;
+        const { error: profileError } = await supa
+          .from("profiles")
+          .update({
+            reminder_enabled: true,
+            timezone
+          })
+          .eq("id", state.user.id);
 
-    document.getElementById("notifyToggle").checked = true;
+        if (profileError) throw profileError;
 
-    alert("Notificações push ativadas. Você receberá seu lembrete mesmo com o aplicativo fechado.");
-  } catch (error) {
-    console.error(error);
+        state.profile.reminder_enabled = true;
+        state.profile.timezone = timezone;
 
-    document.getElementById("notifyToggle").checked = false;
-    alert("Não foi possível ativar as notificações: " + error.message);
-  }
-}
+        document.getElementById("notifyToggle").checked = true;
 
-async function disablePushNotifications() {
-  try {
-    const registration = await navigator.serviceWorker.ready;
-    const subscription = await registration.pushManager.getSubscription();
+        alert("Notificações push ativadas. Você receberá seu lembrete mesmo com o aplicativo fechado.");
+      } catch (error) {
+        console.error(error);
 
-    if (subscription) {
-      await supa
-        .from("push_subscriptions")
-        .delete()
-        .eq("user_id", state.user.id)
-        .eq("endpoint", subscription.endpoint);
-
-      await subscription.unsubscribe();
+        document.getElementById("notifyToggle").checked = false;
+        alert("Não foi possível ativar as notificações: " + error.message);
+      }
     }
 
-    const { error } = await supa
-      .from("profiles")
-      .update({ reminder_enabled: false })
-      .eq("id", state.user.id);
+    async function disablePushNotifications() {
+      try {
+        const registration = await navigator.serviceWorker.ready;
+        const subscription = await registration.pushManager.getSubscription();
 
-    if (error) throw error;
+        if (subscription) {
+          await supa
+            .from("push_subscriptions")
+            .delete()
+            .eq("user_id", state.user.id)
+            .eq("endpoint", subscription.endpoint);
 
-    state.profile.reminder_enabled = false;
-    document.getElementById("notifyToggle").checked = false;
-  } catch (error) {
-    console.error(error);
-    alert("Não foi possível desativar as notificações.");
-  }
-}
+          await subscription.unsubscribe();
+        }
 
-async function saveNotificationTime() {
-  const reminderTime = document.getElementById("notificationTime").value;
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+        const { error } = await supa
+          .from("profiles")
+          .update({ reminder_enabled: false })
+          .eq("id", state.user.id);
 
-  const { error } = await supa
-    .from("profiles")
-    .update({
-      reminder_time: reminderTime,
-      timezone
-    })
-    .eq("id", state.user.id);
+        if (error) throw error;
 
-  if (error) {
-    alert(error.message);
-    return;
-  }
+        state.profile.reminder_enabled = false;
+        document.getElementById("notifyToggle").checked = false;
+      } catch (error) {
+        console.error(error);
+        alert("Não foi possível desativar as notificações.");
+      }
+    }
 
-  state.profile.reminder_time = reminderTime;
-  state.profile.timezone = timezone;
-}
+    async function saveNotificationTime() {
+      const reminderTime = document.getElementById("notificationTime").value;
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+      const { error } = await supa
+        .from("profiles")
+        .update({
+          reminder_time: reminderTime,
+          timezone
+        })
+        .eq("id", state.user.id);
+
+      if (error) {
+        alert(error.message);
+        return;
+      }
+
+      state.profile.reminder_time = reminderTime;
+      state.profile.timezone = timezone;
+    }
 
 
     async function initializeApp(user) {
@@ -2238,10 +2378,11 @@ async function saveNotificationTime() {
         }
       });
 
-      
+
     }
 
     init();
   </script>
 </body>
+
 </html>
