@@ -1,5 +1,7 @@
 import { createSupabaseContext } from "npm:@supabase/server@1";
-import webpush from "npm:web-push";
+
+import * as webpush from "npm:web-push";
+
 
 
 type PushSubscriptionRow = {
