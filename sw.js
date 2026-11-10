@@ -1,4 +1,4 @@
-const CACHE_NAME = "missoes-007-v2";
+const CACHE_NAME = "missoes-007-v3";
 
 const APP_SHELL = [
   "./",
@@ -9,54 +9,67 @@ const APP_SHELL = [
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(APP_SHELL))
+    (async () => {
+      const cache = await caches.open(CACHE_NAME);
+      await cache.addAll(APP_SHELL);
+      await self.skipWaiting();
+    })()
   );
-
-  self.skipWaiting();
 });
 
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys
-          .filter((key) => key !== CACHE_NAME)
-          .map((key) => caches.delete(key))
-      )
-    )
-  );
+    (async () => {
+      const cacheNames = await caches.keys();
 
-  self.clients.claim();
+      await Promise.all(
+        cacheNames
+          .filter((cacheName) => cacheName !== CACHE_NAME)
+          .map((cacheName) => caches.delete(cacheName))
+      );
+
+      await self.clients.claim();
+    })()
+  );
 });
 
 self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET") return;
+  if (event.request.method !== "GET") {
+    return;
+  }
 
   event.respondWith(
-    caches.match(event.request).then((cachedResponse) => {
-      if (cachedResponse) return cachedResponse;
+    (async () => {
+      const cachedResponse = await caches.match(event.request);
 
-      return fetch(event.request)
-        .then((networkResponse) => {
-          const copy = networkResponse.clone();
+      if (cachedResponse) {
+        return cachedResponse;
+      }
 
-          if (
-            event.request.url.startsWith(self.location.origin) &&
-            networkResponse.status === 200
-          ) {
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, copy);
-            });
+      try {
+        const networkResponse = await fetch(event.request);
+
+        if (
+          event.request.url.startsWith(self.location.origin) &&
+          networkResponse.status === 200
+        ) {
+          const cache = await caches.open(CACHE_NAME);
+          await cache.put(event.request, networkResponse.clone());
+        }
+
+        return networkResponse;
+      } catch (error) {
+        if (event.request.mode === "navigate") {
+          const offlinePage = await caches.match("./index.html");
+
+          if (offlinePage) {
+            return offlinePage;
           }
+        }
 
-          return networkResponse;
-        })
-        .catch(() => {
-          if (event.request.mode === "navigate") {
-            return caches.match("./index.html");
-          }
-        });
-    })
+        throw error;
+      }
+    })()
   );
 });
 
@@ -68,79 +81,81 @@ self.addEventListener("push", (event) => {
     tag: "daily-reminder"
   };
 
-  try {
-    if (event.data) {
-      payload = { ...payload, ...event.data.json() };
-    }
-  } catch {
-    // Mantém a mensagem padrão se o conteúdo recebido não for JSON.
-  }
+  if (event.data) {
+    try {
+      const receivedPayload = event.data.json();
 
-  event.waitUntil(
-    self.registration.showNotification(payload.title, {
-      body: payload.body,
-      icon: "./icon.svg",
-      badge: "./icon.svg",
-      tag: payload.tag || "daily-reminder",
-      renotify: false,
-      data: {
-        url: payload.url || "./"
+      if (
+        receivedPayload &&
+        typeof receivedPayload === "object" &&
+        !Array.isArray(receivedPayload)
+      ) {
+        payload = {
+          ...payload,
+          ...receivedPayload
+        };
       }
-    })
-  );
-});
+    } catch {
+      const text = event.data.text();
 
-self.addEventListener("push", (event) => {
-  let payload = {};
-
-  try {
-    if (event.data) {
-      payload = event.data.json();
+      if (text) {
+        payload.body = text;
+      }
     }
-  } catch {
-    payload = {
-      body: event.data ? event.data.text() : ""
-    };
   }
 
-  const title = payload.title || "Missões 007";
-
-  const options = {
-    body: payload.body || "Você tem uma nova missão.",
-    icon: new URL("./icons/icon-192.png", self.registration.scope).href,
-    data: {
-      url: payload.url || "./"
-    }
-  };
-
   event.waitUntil(
-    self.registration.showNotification(title, options)
+    self.registration.showNotification(
+      payload.title || "Missões 007",
+      {
+        body: payload.body || "Você tem uma nova missão.",
+        icon: "./icon.svg",
+        badge: "./icon.svg",
+        tag: payload.tag || "daily-reminder",
+        renotify: false,
+        data: {
+          url: payload.url || "./"
+        }
+      }
+    )
   );
 });
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
 
-  const targetUrl = new URL(
-    event.notification.data?.url || "./",
-    self.registration.scope
-  ).href;
-
   event.waitUntil(
-    clients.matchAll({
-      type: "window",
-      includeUncontrolled: true
-    }).then((windows) => {
-      for (const client of windows) {
-        if ("focus" in client) {
-          return client.focus();
+    (async () => {
+      const targetUrl = new URL(
+        event.notification.data?.url || "./",
+        self.registration.scope
+      );
+
+      if (targetUrl.origin !== self.location.origin) {
+        return;
+      }
+
+      const windows = await self.clients.matchAll({
+        type: "window",
+        includeUncontrolled: true
+      });
+
+      for (const windowClient of windows) {
+        if ("focus" in windowClient) {
+          if (
+            "navigate" in windowClient &&
+            windowClient.url !== targetUrl.href
+          ) {
+            await windowClient.navigate(targetUrl.href);
+          }
+
+          return windowClient.focus();
         }
       }
 
-      if (clients.openWindow) {
-        return clients.openWindow(targetUrl);
+      if (self.clients.openWindow) {
+        return self.clients.openWindow(targetUrl.href);
       }
-    })
+    })()
   );
 });
-
