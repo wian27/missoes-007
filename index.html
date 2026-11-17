@@ -96,6 +96,29 @@
       display: none !important;
     }
 
+    .button-loading {
+      opacity: .78;
+      cursor: wait !important;
+      pointer-events: none;
+    }
+
+    .button-loading::before {
+      content: "";
+      display: inline-block;
+      width: 1em;
+      height: 1em;
+      margin-right: .5em;
+      vertical-align: -0.15em;
+      border: 2px solid currentColor;
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: button-spin .7s linear infinite;
+    }
+
+    @keyframes button-spin {
+      to { transform: rotate(360deg); }
+    }
+
     /* AUTENTICAÇÃO */
     .auth-screen {
       display: grid;
@@ -1683,7 +1706,20 @@
       });
     }
 
+    function missionAlreadyAdded(name, category) {
+      const normalizedName = name.trim().toLocaleLowerCase("pt-BR");
+      return state.missions.some(mission =>
+        (mission.name || "").trim().toLocaleLowerCase("pt-BR") === normalizedName &&
+        mission.category === category
+      );
+    }
+
     async function addMission(name, category, position = 99) {
+      if (missionAlreadyAdded(name, category)) {
+        alert("Essa missão já foi adicionada à operação de hoje.");
+        return;
+      }
+
       if (state.missions.length >= 7) {
         alert("Sua operação já possui 7 missões. Conclua ou remova uma antes de adicionar outra.");
         return;
@@ -1716,6 +1752,11 @@
 
       if (name.length < 3) {
         alert("Digite uma missão simples e objetiva.");
+        return;
+      }
+
+      if (missionAlreadyAdded(name, category)) {
+        alert("Essa missão já foi adicionada à operação de hoje.");
         return;
       }
 
@@ -2380,6 +2421,59 @@
 
 
     }
+
+    function showButtonLoading(button, action) {
+      if (button.dataset.loading === "true") return;
+      const original = button.innerHTML;
+      button.dataset.loading = "true";
+      button.dataset.originalHtml = original;
+      button.classList.add("button-loading");
+      button.disabled = true;
+      button.setAttribute("aria-busy", "true");
+
+      let result;
+      try {
+        result = action();
+      } catch (error) {
+        restoreButton(button);
+        throw error;
+      }
+
+      return Promise.resolve(result).finally(() => restoreButton(button));
+    }
+
+    function restoreButton(button) {
+      if (!button.isConnected) return;
+      button.innerHTML = button.dataset.originalHtml || button.innerHTML;
+      delete button.dataset.originalHtml;
+      delete button.dataset.loading;
+      button.classList.remove("button-loading");
+      button.disabled = false;
+      button.removeAttribute("aria-busy");
+    }
+
+    function wrapButtonActions(root = document) {
+      root.querySelectorAll("button").forEach(button => {
+        if (button.dataset.actionWrapped || typeof button.onclick !== "function") return;
+        const original = button.onclick;
+        button.onclick = function(event) {
+          return showButtonLoading(this, () => original.call(this, event));
+        };
+        button.dataset.actionWrapped = "true";
+      });
+    }
+
+    wrapButtonActions();
+    new MutationObserver(records => {
+      for (const record of records) {
+        record.addedNodes.forEach(node => {
+          if (node.nodeType === Node.ELEMENT_NODE) {
+            if (node.matches?.("button")) wrapButtonActions(node.parentElement || document);
+            else wrapButtonActions(node);
+          }
+        });
+      }
+    }).observe(document.body, { childList: true, subtree: true });
 
     init();
   </script>
