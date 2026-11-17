@@ -282,6 +282,11 @@
       border-color: var(--green);
     }
 
+    .outline-btn:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
     .hero {
       background: linear-gradient(135deg, rgba(85, 219, 136, .17), rgba(17, 44, 33, .94));
       border: 1px solid var(--line);
@@ -1368,33 +1373,46 @@
       document.body.classList.toggle("light", data.theme === "light");
     }
 
+    const defaultMissionsInitialization = new Set();
+
     async function createDefaultMissionsIfNeeded() {
+      if (!state.user) return;
+
       const today = dateKey();
+      const initializationKey = `${state.user.id}:${today}`;
 
-      const { data: existing, error } = await supa
-        .from("daily_missions")
-        .select("*")
-        .eq("user_id", state.user.id)
-        .eq("mission_date", today);
+      // Evita que duas inicializações paralelas insiram o conjunto padrão duas vezes.
+      if (defaultMissionsInitialization.has(initializationKey)) return;
+      defaultMissionsInitialization.add(initializationKey);
 
-      if (error) {
-        console.error(error);
-        return;
+      try {
+        const { data: existing, error } = await supa
+          .from("daily_missions")
+          .select("id")
+          .eq("user_id", state.user.id)
+          .eq("mission_date", today);
+
+        if (error) {
+          console.error(error);
+          return;
+        }
+
+        if (existing?.length > 0) return;
+
+        const rows = DEFAULT_MISSIONS.map((mission, index) => ({
+          user_id: state.user.id,
+          mission_date: today,
+          mission_ref: `default-${today}-${index + 1}`,
+          name: mission.name,
+          category: mission.category,
+          position: index + 1
+        }));
+
+        const { error: insertError } = await supa.from("daily_missions").insert(rows);
+        if (insertError) console.error(insertError);
+      } finally {
+        defaultMissionsInitialization.delete(initializationKey);
       }
-
-      if (existing.length > 0) return;
-
-      const rows = DEFAULT_MISSIONS.map((mission, index) => ({
-        user_id: state.user.id,
-        mission_date: today,
-        mission_ref: `default-${today}-${index + 1}`,
-        name: mission.name,
-        category: mission.category,
-        position: index + 1
-      }));
-
-      const { error: insertError } = await supa.from("daily_missions").insert(rows);
-      if (insertError) console.error(insertError);
     }
 
     async function loadUserData() {
@@ -1698,8 +1716,12 @@
               <span class="mission-name">${escapeHTML(name)}</span>
               <span class="tag">${CATEGORIES[category].icon} ${category}</span>
             </div>
-            <button class="outline-btn" onclick="addMission('${escapeHTML(name).replace(/'/g, "\\'")}', '${category}', ${index})">
-              Adicionar
+            <button
+              class="outline-btn"
+              onclick="addMission('${escapeHTML(name).replace(/'/g, "\\'")}', '${category}', ${index})"
+              ${missionAlreadyAdded(name) ? "disabled aria-disabled=\"true\" title=\"Essa missão já está na operação de hoje.\"" : ""}
+            >
+              ${missionAlreadyAdded(name) ? "Já adicionada" : "Adicionar"}
             </button>
           </div>
         `;
