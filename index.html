@@ -1706,43 +1706,82 @@
       });
     }
 
-    function missionAlreadyAdded(name, category) {
-      const normalizedName = name.trim().toLocaleLowerCase("pt-BR");
+    function normalizeMissionName(name) {
+      return (name || "")
+        .trim()
+        .replace(/\\s+/g, " ")
+        .toLocaleLowerCase("pt-BR");
+    }
+
+    function missionAlreadyAdded(name) {
+      const normalizedName = normalizeMissionName(name);
       return state.missions.some(mission =>
-        (mission.name || "").trim().toLocaleLowerCase("pt-BR") === normalizedName &&
-        mission.category === category
+        normalizeMissionName(mission.name) === normalizedName
       );
     }
 
+    const missionsBeingAdded = new Set();
+
     async function addMission(name, category, position = 99) {
-      if (missionAlreadyAdded(name, category)) {
-        alert("Essa missão já foi adicionada à operação de hoje.");
-        return;
+      const normalizedName = normalizeMissionName(name);
+
+      if (!normalizedName || missionsBeingAdded.has(normalizedName)) return;
+
+      missionsBeingAdded.add(normalizedName);
+
+      try {
+        if (missionAlreadyAdded(name)) {
+          alert("Essa missão já foi adicionada à operação de hoje.");
+          return;
+        }
+
+        const today = dateKey();
+        const { data: todaysMissions, error: checkError } = await supa
+          .from("daily_missions")
+          .select("id,name")
+          .eq("user_id", state.user.id)
+          .eq("mission_date", today);
+
+        if (checkError) {
+          alert("Não foi possível conferir as missões de hoje. Tente novamente.");
+          console.error(checkError);
+          return;
+        }
+
+        if ((todaysMissions || []).some(mission =>
+          normalizeMissionName(mission.name) === normalizedName
+        )) {
+          alert("Essa missão já foi adicionada à operação de hoje.");
+          await loadUserData();
+          return;
+        }
+
+        if (todaysMissions.length >= 7) {
+          alert("Sua operação já possui 7 missões. Conclua ou remova uma antes de adicionar outra.");
+          return;
+        }
+
+        const { error } = await supa
+          .from("daily_missions")
+          .insert({
+            user_id: state.user.id,
+            mission_date: today,
+            mission_ref: createMissionRef(),
+            name: name.trim().replace(/\\s+/g, " "),
+            category,
+            position: todaysMissions.length + position + 1
+          });
+
+        if (error) {
+          alert(error.message);
+          return;
+        }
+
+        await loadUserData();
+        showSection("hoje");
+      } finally {
+        missionsBeingAdded.delete(normalizedName);
       }
-
-      if (state.missions.length >= 7) {
-        alert("Sua operação já possui 7 missões. Conclua ou remova uma antes de adicionar outra.");
-        return;
-      }
-
-      const { error } = await supa
-        .from("daily_missions")
-        .insert({
-          user_id: state.user.id,
-          mission_date: dateKey(),
-          mission_ref: createMissionRef(),
-          name,
-          category,
-          position: state.missions.length + position + 1
-        });
-
-      if (error) {
-        alert(error.message);
-        return;
-      }
-
-      await loadUserData();
-      showSection("hoje");
     }
 
     async function addCustomMission() {
