@@ -747,6 +747,21 @@
       white-space: nowrap;
     }
 
+    .whatsapp-invite {
+      margin-top: 12px;
+      padding: 8px 11px;
+      color: var(--green);
+      background: transparent;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      font-size: 12px;
+    }
+
+    .whatsapp-invite:hover {
+      border-color: var(--green);
+      background: rgba(85, 219, 136, .08);
+    }
+
     .ranking-medal {
       display: inline-block;
       margin-left: 4px;
@@ -1075,6 +1090,11 @@
             </thead>
             <tbody id="rankingList"></tbody>
           </table>
+        </div>
+        <div style="text-align:right">
+          <button class="whatsapp-invite" type="button" onclick="inviteViaWhatsApp()">
+            📲 Convidar pelo WhatsApp
+          </button>
         </div>
       </div>
     </section>
@@ -2095,6 +2115,15 @@
       if (data.success) {
         await loadUserData();
       }
+    }
+
+    function inviteViaWhatsApp() {
+      const inviteLink = "https://wian27.github.io/missoes-007/";
+      const message = `🚀 Topa um desafio comigo? Estou usando o Missões 007 para cumprir pequenas missões todos os dias, criar bons hábitos e acompanhar minha evolução no ranking. Faça seu cadastro e venha participar também! 🎯
+
+${inviteLink}`;
+      const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+      window.open(whatsappUrl, "_blank", "noopener,noreferrer");
     }
 
     async function renderRanking() {
