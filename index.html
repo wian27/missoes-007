@@ -1709,7 +1709,7 @@
     function normalizeMissionName(name) {
       return (name || "")
         .trim()
-        .replace(/\\s+/g, " ")
+        .replace(/\s+/g, " ")
         .toLocaleLowerCase("pt-BR");
     }
 
@@ -1767,7 +1767,7 @@
             user_id: state.user.id,
             mission_date: today,
             mission_ref: createMissionRef(),
-            name: name.trim().replace(/\\s+/g, " "),
+            name: name.trim().replace(/\s+/g, " "),
             category,
             position: todaysMissions.length + position + 1
           });
