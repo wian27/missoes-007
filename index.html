@@ -744,7 +744,15 @@
     .rank-position {
       color: var(--green);
       font-weight: bold;
-      width: 34px;
+      white-space: nowrap;
+    }
+
+    .ranking-medal {
+      display: inline-block;
+      margin-left: 4px;
+      font-size: 14px;
+      line-height: 1;
+      vertical-align: -1px;
     }
 
     .empty {
@@ -2139,10 +2147,11 @@
 
       ranking.forEach((agent) => {
         const isMe = agent.id === state.user.id;
+        const medal = { 1: "🥇", 2: "🥈", 3: "🥉" }[Number(agent.rank_position)] || "";
 
         rankingList.innerHTML += `
       <tr class="${isMe ? "me" : ""}">
-        <td class="rank-position">${agent.rank_position}</td>
+        <td class="rank-position">${agent.rank_position}${medal ? `<span class="ranking-medal" aria-label="${Number(agent.rank_position) === 1 ? "1º lugar" : Number(agent.rank_position) === 2 ? "2º lugar" : "3º lugar"}">${medal}</span>` : ""}</td>
         <td>
           ${escapeHTML(agent.display_name)}
           ${isMe ? " · Você" : ""}
